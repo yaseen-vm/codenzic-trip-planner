@@ -22,7 +22,7 @@ A React Native and Expo trip-planning app for Android and iOS, built for the Cod
 
 - Node.js 20 LTS
 - npm
-- Expo Go for initial map preview, or a development build for native Google Maps configuration
+- Android Studio with an Android emulator/device for native map testing. Expo Go can show blank Google Maps tiles with some Expo SDK / `react-native-maps` combinations; use a development build to verify this app's own native Maps key.
 
 ## Run locally
 
@@ -42,12 +42,12 @@ npm start
    - `EXPO_PUBLIC_GOOGLE_PLACES_API_KEY`: Places API (New) only.
    - `EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY`: Routes API only (development/testing only; this key is exposed in the client bundle).
 4. **Security:** `EXPO_PUBLIC_*` keys are embedded in the client app and can be extracted. Restrict Places and Routes keys to only their required APIs, apply quotas and billing alerts, and use a secured backend proxy for production web-service requests. Never use a Places or Routes key as a native Maps SDK key.
-5. Rebuild the native app after changing native Maps SDK keys or config:
+5. Set the native key in your local `.env`, then build and run your own Android app (not Expo Go):
    ```bash
-   npx expo run:ios
    npx expo run:android
    ```
-   Google Maps provider configuration on iOS requires a native build; Expo Go may use its bundled provider rather than your configured Google Maps SDK.
+   This generates/uses the native Android project and embeds `GOOGLE_MAPS_ANDROID_API_KEY`. For subsequent starts use `npx expo start --dev-client`. Changing native keys or native config requires rebuilding the app. On Android, the Google Cloud key restriction must match `com.codenzic.trippath` and the SHA-1 certificate used to sign this build.
+6. If building with EAS, configure `GOOGLE_MAPS_ANDROID_API_KEY` as an EAS environment variable available to the development build, then run `eas build --profile development --platform android`. Install that build on the device and launch the Metro server in development-client mode. Do not expect the native key from this app's config to be injected into Expo Go.
 
 The `.env` file is ignored by Git. No live keys are stored in this repository.
 
