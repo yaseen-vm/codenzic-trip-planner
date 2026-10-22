@@ -57,7 +57,7 @@ export default function SetLocationsScreen() {
       Alert.alert('Choose different locations', 'Pickup and drop-off must be different.');
       return;
     }
-    Alert.alert('Locations set', `Pickup: ${pickup.trim()}\nDrop-off: ${dropoff.trim()}\n\nThe next trip-planning step will be connected here.`);
+    router.push({ pathname: '/route', params: { pickup: pickup.trim(), dropoff: dropoff.trim() } });
   };
 
   return (
