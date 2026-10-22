@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "TripPath",
+    "slug": "trippath",
+    "scheme": "trippath",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.codenzic.trippath"
+    },
+    "ios": {
+      "bundleIdentifier": "com.codenzic.trippath",
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
