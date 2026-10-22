@@ -1,3 +1,3 @@
 /// <reference types="expo/types" />
 
-// Expo generates additional environment typings during development.
+// NOTE: This file should not be edited and should be in your git ignore
