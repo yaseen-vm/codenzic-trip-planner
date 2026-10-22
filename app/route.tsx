@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, Region } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { ArrowLeft, Navigation, CarFront, Bike, Footprints } from 'lucide-react-native';
 
 const COLORS = {
@@ -84,7 +84,7 @@ export default function RouteScreen() {
     [params.dropoffLat, params.dropoffLng],
   );
   const [mode, setMode] = useState<TravelMode>('DRIVE');
-  const [route, setRoute] = useState<Coordinate[]>([start, end]);
+  const [route, setRoute] = useState<Coordinate[]>([]);
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
   const [steps, setSteps] = useState<string[]>([]);
@@ -115,9 +115,9 @@ export default function RouteScreen() {
     let cancelled = false;
     async function fetchRoute() {
       if (!ROUTES_KEY || !params.pickupLat || !params.dropoffLat) {
-        setRoute([start, end]);
-        setDistance('Route preview');
-        setDuration('Enable Routes API');
+        setRoute([]);
+        setDistance('Route unavailable');
+        setDuration('Configuration required');
         setSteps([
           'Add EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY to calculate road routes and travel time.',
         ]);
@@ -178,7 +178,7 @@ export default function RouteScreen() {
         );
       } catch (error) {
         if (!cancelled) {
-          setRoute([start, end]);
+          setRoute([]);
           setDistance('Route unavailable');
           setDuration('API setup required');
           setSteps([error instanceof Error ? error.message : 'Could not calculate a route.']);
@@ -231,6 +231,7 @@ export default function RouteScreen() {
           <MapView
             ref={mapRef}
             style={StyleSheet.absoluteFill}
+            provider={PROVIDER_GOOGLE}
             initialRegion={region}
             onMapReady={() => setMapReady(true)}
             toolbarEnabled={false}
@@ -347,7 +348,8 @@ export default function RouteScreen() {
           <Pressable
             accessibilityRole="button"
             onPress={startNavigation}
-            style={styles.startButton}
+            disabled={loading || route.length < 2}
+            style={[styles.startButton, (loading || route.length < 2) && { opacity: 0.5 }]}
           >
             <Navigation size={17} color={COLORS.white} />
             <Text style={styles.startText}>Start navigation in Google Maps</Text>
