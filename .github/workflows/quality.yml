@@ -35,9 +35,15 @@ jobs:
       - name: Install dependencies
         if: steps.scaffold.outputs.ready == 'true'
         run: npm ci
+      - name: Expo dependency compatibility
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npx expo install --check
       - name: Type-check
         if: steps.scaffold.outputs.ready == 'true'
         run: npm run type-check
+      - name: Lint
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npm run lint
       - name: Check formatting
         if: steps.scaffold.outputs.ready == 'true'
         run: npm run format:check
