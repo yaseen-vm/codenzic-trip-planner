@@ -1,0 +1,17 @@
+node_modules/
+.expo/
+.expo-shared/
+dist/
+build/
+*.log
+.env
+.env.*
+!.env.example
+*.apk
+*.aab
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
