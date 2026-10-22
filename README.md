@@ -4,39 +4,52 @@ A React Native and Expo trip-planning app for Android and iOS, built for the Cod
 
 ## Current implementation
 
-- Login screen styled to match the supplied reference.
-- Email format and minimum password length validation.
-- Password visibility toggle.
-- Forgot-password and create-account entry points (placeholder actions until authentication is connected).
-- Responsive layout with a fixed bottom action area, safe-area handling, and keyboard-aware behavior.
-
-Authentication is not connected to a backend yet. A valid form currently shows a demo confirmation; it does not create a real session.
+- Login screen styled to match the supplied reference (authentication is still a demo).
+- Google Places (New) autocomplete for pickup and destination, with coordinates retained from selected places.
+- Native Google Maps map view with pickup/drop-off markers and a Google Routes API road polyline.
+- Route distance, duration, turn instructions, drive/two-wheeler/walk mode selection, and a hand-off to Google Maps for live turn-by-turn navigation.
+- Responsive layouts, safe-area handling, and basic input validation.
 
 ## Tech stack
 
 - Expo SDK 54 and Expo Router
-- React Native 0.81
-- TypeScript with strict checking
-- React Native Safe Area Context
-- Expo Vector Icons
+- React Native 0.81 and TypeScript
+- `react-native-maps`
+- Google Places API (New) and Routes API
 - ESLint and Prettier
 
 ## Prerequisites
 
 - Node.js 20 LTS
 - npm
-- Expo Go on a physical device, or Android Studio for an Android emulator
+- Expo Go for initial map preview, or a development build for native Google Maps configuration
 
 ## Run locally
 
 ```bash
 npm install
+npx expo install --check
 npm start
 ```
 
-Scan the QR code with Expo Go. To start an Android emulator, run `npm run android`.
+## Google Maps, Places and Routes setup
 
-> A package lockfile is not included in this initial scaffold commit. Run `npm install` to resolve dependencies locally; commit the generated lockfile in a follow-up once dependency installation and Expo compatibility checks have been verified.
+1. Copy `.env.example` to `.env` and fill in your own keys. Never commit `.env`.
+2. Enable billing and enable **Maps SDK for Android**, **Maps SDK for iOS**, **Places API (New)**, and **Routes API** in the Google Cloud project.
+3. Use separate keys where possible:
+   - `GOOGLE_MAPS_ANDROID_API_KEY`: restrict to Android app `com.codenzic.trippath` plus your signing certificate and Maps SDK for Android.
+   - `GOOGLE_MAPS_IOS_API_KEY`: restrict to iOS bundle ID `com.codenzic.trippath` and Maps SDK for iOS.
+   - `EXPO_PUBLIC_GOOGLE_PLACES_API_KEY`: Places API (New) only.
+   - `EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY`: Routes API only.
+4. **Important security note:** `EXPO_PUBLIC_*` keys are embedded in the client app and can be extracted. Do not put unrestricted web-service keys there. For production, proxy Places and Routes requests through a secured backend and keep those server keys there. Apply quotas and billing alerts.
+5. Rebuild the native app after changing native Maps SDK keys or config:
+   ```bash
+   npx expo run:ios
+   npx expo run:android
+   ```
+   Google Maps provider configuration on iOS requires a native build; Expo Go may use its bundled provider rather than your configured Google Maps SDK.
+
+The `.env` file is ignored by Git. No live keys are stored in this repository.
 
 ## Quality checks
 
@@ -47,41 +60,20 @@ npm run format:check
 npm run check
 ```
 
+Run these checks locally before merging. A native iOS/Android smoke test is also required; these checks have not been run as part of the GitHub edits.
+
 ## Project structure
 
 ```text
 app/
-  _layout.tsx   # Root Expo Router layout
-  index.tsx     # Redirect to login
-  login.tsx     # Login screen
-components/     # Shared UI components as features are implemented
-constants/      # Shared design tokens and static data
-context/        # App-level state
-docs/           # Product and engineering documentation
+  _layout.tsx
+  index.tsx
+  login.tsx
+  locations.tsx
+  route.tsx
+docs/
 ```
-
-The planned application flow and engineering specifications are documented in [AGENT.md](./AGENT.md) and [docs/](./docs/).
-
-## Security
-
-- Never commit `.env`, signing credentials, or API keys.
-- Any `EXPO_PUBLIC_*` variable is embedded in the client bundle and must not contain secrets.
-- Configure and restrict platform API keys before enabling native map integrations.
 
 ## License
 
 MIT
-
-## Google Maps configuration
-
-Native Google Maps SDK keys are read from local environment variables by `app.config.ts`:
-
-- `GOOGLE_MAPS_ANDROID_API_KEY`
-- `GOOGLE_MAPS_IOS_API_KEY`
-
-1. Copy `.env.example` to `.env`.
-2. Set each variable to its platform-specific Google Maps SDK key.
-3. In Google Cloud Console, enable billing and the relevant Maps SDK (Android/iOS). Restrict each key to its matching Android package/signing certificate or iOS bundle identifier, and restrict allowed APIs.
-4. Rebuild the native development app after changing native map configuration; a Metro reload or Expo Go alone may not apply native SDK changes.
-
-The `.env` file is ignored by Git. The native keys are still included in the built app, so they are not secrets; application and API restrictions are required. Keep server-side Routes/Places web-service keys separate and never put unrestricted server keys in the mobile app.
