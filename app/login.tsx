@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { useState } from 'react';
 import {
   Alert,
@@ -20,7 +20,7 @@ const COLORS = {
   text: '#172533',
   muted: '#8090A2',
   border: '#E3E8ED',
-  orange: '#FA4B1B',
+  orange: '#F1521F',
 };
 
 export default function LoginScreen() {
@@ -56,17 +56,10 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.brandMark}>
-              <Svg width={32} height={32} viewBox="0 0 40 40" accessibilityLabel="Codenzic logo">
-                <Path
-                  d="M29 8 H12 A4.5 4.5 0 0 0 12 17 H27.5 A4.5 4.5 0 0 1 27.5 26 H12"
-                  fill="none"
-                  stroke={COLORS.white}
-                  strokeWidth={3.4}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <Circle cx={29} cy={8} r={5} fill={COLORS.orange} stroke={COLORS.white} strokeWidth={3.4} />
-                <Circle cx={8} cy={29} r={5} fill={COLORS.orange} stroke={COLORS.white} strokeWidth={3.4} />
+              <Svg width={45} height={45} viewBox="0 0 56 56" accessibilityLabel="Codenzic logo">
+                <Path d="M17.5 36.17C17.5 34.237 19.067 32.67 21 32.67C22.933 32.67 24.5 34.237 24.5 36.17C24.5 38.103 22.933 39.67 21 39.67C19.067 39.67 17.5 38.103 17.5 36.17Z" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" stroke="white" />
+                <Path d="M24.5 36.16H34.4167C36.6718 36.16 38.5 34.3322 38.5 32.0775C38.5 29.8228 36.6718 27.995 34.4167 27.995H21.5833C19.3282 27.995 17.5 26.1672 17.5 23.9125C17.5 21.6578 19.3282 19.83 21.5833 19.83H31.5" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" stroke="white" />
+                <Path d="M31.5 19.83C31.5 17.897 33.067 16.33 35 16.33C36.933 16.33 38.5 17.897 38.5 19.83C38.5 21.763 36.933 23.33 35 23.33C33.067 23.33 31.5 21.763 31.5 19.83Z" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" stroke="white" />
               </Svg>
             </View>
 
@@ -189,7 +182,7 @@ const styles = StyleSheet.create({
   brandMark: {
     width: 45,
     height: 45,
-    borderRadius: 14,
+    borderRadius: 14.46,
     backgroundColor: COLORS.orange,
     alignItems: 'center',
     justifyContent: 'center',
