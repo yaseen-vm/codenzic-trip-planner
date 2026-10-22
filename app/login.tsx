@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Eye, EyeOff, Workflow } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Alert,
@@ -40,7 +40,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -55,7 +55,7 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.brandMark}>
-              <Ionicons name="git-network-outline" size={27} color={COLORS.white} />
+              <Workflow size={29} color={COLORS.white} strokeWidth={2.4} />
             </View>
 
             <Text style={styles.heading}>Welcome back</Text>
@@ -80,7 +80,9 @@ export default function LoginScreen() {
                   textContentType="emailAddress"
                   value={email}
                 />
-                {emailError ? <Text style={styles.errorText}>Enter a valid email address.</Text> : null}
+                {emailError ? (
+                  <Text style={styles.errorText}>Enter a valid email address.</Text>
+                ) : null}
               </View>
 
               <View style={styles.fieldGroup}>
@@ -107,11 +109,11 @@ export default function LoginScreen() {
                     onPress={() => setShowPassword((visible) => !visible)}
                     style={styles.eyeButton}
                   >
-                    <Ionicons
-                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                      size={20}
-                      color="#7D8B9A"
-                    />
+                    {showPassword ? (
+                      <EyeOff size={20} color="#7D8B9A" />
+                    ) : (
+                      <Eye size={20} color="#7D8B9A" />
+                    )}
                   </Pressable>
                 </View>
                 {passwordError ? (
@@ -122,7 +124,10 @@ export default function LoginScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() =>
-                  Alert.alert('Forgot password?', 'Password recovery will be available when authentication is connected.')
+                  Alert.alert(
+                    'Forgot password?',
+                    'Password recovery will be available when authentication is connected.',
+                  )
                 }
                 style={styles.forgotButton}
               >
@@ -144,7 +149,10 @@ export default function LoginScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() =>
-                  Alert.alert('Create an account', 'Account creation will be implemented with authentication.')
+                  Alert.alert(
+                    'Create an account',
+                    'Account creation will be implemented with authentication.',
+                  )
                 }
                 hitSlop={8}
               >
