@@ -1,4 +1,5 @@
-import { Eye, EyeOff, Workflow } from 'lucide-react-native';
+import { Eye, EyeOff } from 'lucide-react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
 import { useState } from 'react';
 import {
   Alert,
@@ -55,7 +56,18 @@ export default function LoginScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.brandMark}>
-              <Workflow size={29} color={COLORS.white} strokeWidth={2.4} />
+              <Svg width={32} height={32} viewBox="0 0 40 40" accessibilityLabel="Codenzic logo">
+                <Path
+                  d="M29 8 H12 A4.5 4.5 0 0 0 12 17 H27.5 A4.5 4.5 0 0 1 27.5 26 H12"
+                  fill="none"
+                  stroke={COLORS.white}
+                  strokeWidth={3.4}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <Circle cx={29} cy={8} r={5} fill={COLORS.orange} stroke={COLORS.white} strokeWidth={3.4} />
+                <Circle cx={8} cy={29} r={5} fill={COLORS.orange} stroke={COLORS.white} strokeWidth={3.4} />
+              </Svg>
             </View>
 
             <Text style={styles.heading}>Welcome back</Text>
