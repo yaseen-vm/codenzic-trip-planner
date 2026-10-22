@@ -71,3 +71,17 @@ The planned application flow and engineering specifications are documented in [A
 ## License
 
 MIT
+
+## Google Maps configuration
+
+Native Google Maps SDK keys are read from local environment variables by `app.config.ts`:
+
+- `GOOGLE_MAPS_ANDROID_API_KEY`
+- `GOOGLE_MAPS_IOS_API_KEY`
+
+1. Copy `.env.example` to `.env`.
+2. Set each variable to its platform-specific Google Maps SDK key.
+3. In Google Cloud Console, enable billing and the relevant Maps SDK (Android/iOS). Restrict each key to its matching Android package/signing certificate or iOS bundle identifier, and restrict allowed APIs.
+4. Rebuild the native development app after changing native map configuration; a Metro reload or Expo Go alone may not apply native SDK changes.
+
+The `.env` file is ignored by Git. The native keys are still included in the built app, so they are not secrets; application and API restrictions are required. Keep server-side Routes/Places web-service keys separate and never put unrestricted server keys in the mobile app.
