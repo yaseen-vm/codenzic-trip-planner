@@ -2,21 +2,13 @@ import type { ExpoConfig } from 'expo/config';
 
 export default ({ config }: { config: ExpoConfig }): ExpoConfig => ({
   ...config,
-  plugins: [
-    ...(config.plugins ?? []),
-    [
-      'react-native-maps',
-      {
-        androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY ?? '',
-        iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_IOS_API_KEY ?? '',
-      },
-    ],
-  ],
   android: {
     ...config.android,
     config: {
       ...config.android?.config,
-      googleMaps: { apiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY ?? '' },
+      googleMaps: {
+        apiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY ?? '',
+      },
     },
   },
   ios: {
