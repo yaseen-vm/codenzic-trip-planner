@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -24,6 +25,7 @@ const COLORS = {
 };
 
 export default function LoginScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +39,7 @@ export default function LoginScreen() {
   function handleLogin() {
     setSubmitted(true);
     if (!emailIsValid || password.length < 6) return;
-    Alert.alert('Demo login', 'Your form is valid. Authentication will be connected in a later step.');
+    router.push('/locations');
   }
 
   return (
