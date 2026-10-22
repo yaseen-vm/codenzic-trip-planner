@@ -5,20 +5,20 @@ This guide records the local workflow for TripPath. Product and screen-level spe
 ## Prerequisites
 
 - Node.js 20 LTS (npm is included).
-- Expo Go can be used for basic previews, but verify Google Maps rendering in a development build with the app's own native configuration. An Android emulator requires Android Studio.
+- Android Studio and an Android emulator/device for native map testing. A black map can be an Expo Go limitation for some SDK / `react-native-maps` combinations; use a development build with this app's own native Maps SDK key to diagnose and verify tile rendering.
 - A Google Maps API key only when native map configuration requires one. Restrict keys to the required SDKs and platforms.
 
 ## Local setup
 
 1. Clone the repository and enter its directory.
-2. Install dependencies with `npm install`. A lockfile has not yet been committed; generate and review one after verifying dependency compatibility.
+2. Install dependencies with `npm ci` to use the committed lockfile (or `npm install` if intentionally updating dependencies).
 3. Copy `.env.example` to `.env` if you need local configuration. Never commit real credentials.
-4. Start Expo with `npm start` and scan the QR code using Expo Go, or use `npm run android` with an Android emulator configured.
+4. For non-map screens, `npm start` and Expo Go can be used for a quick preview. For Google Maps verification, add `GOOGLE_MAPS_ANDROID_API_KEY` to `.env` and run `npx expo run:android` to build/install the native app. Then start Metro with `npx expo start --dev-client`. Do not use Expo Go as the acceptance test for the native Maps SDK key.
 5. Before opening a PR, run `npm run check`.
 
 ## Current implementation status
 
-The Expo Router scaffold and login screen are now present. Login validates email syntax and a minimum password length, but authentication, password recovery, and account creation remain placeholders. Map and trip-planning screens are not implemented yet.
+The Expo Router scaffold, login, Places search, and route screen are present. Login validates email syntax and a minimum password length, but authentication, password recovery, and account creation remain placeholders.
 
 ## Quality checks
 
@@ -27,7 +27,7 @@ The Expo Router scaffold and login screen are now present. Login validates email
 - `npm run format:check`: verifies repository formatting.
 - `npm run check`: runs all local quality checks.
 
-CI defers these checks until both `package.json` and `package-lock.json` are present. This avoids a guaranteed failure while the lockfile is absent; commit the lockfile to activate deterministic CI installs and checks.
+CI installs the committed lockfile and runs Expo dependency compatibility, TypeScript, lint, and formatting checks.
 
 ## Configuration and secrets
 
