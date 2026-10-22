@@ -12,8 +12,8 @@ A React Native and Expo trip-planning app for Android and iOS, built for the Cod
 
 ## Tech stack
 
-- Expo SDK 54 and Expo Router
-- React Native 0.81 and TypeScript
+- Expo SDK 57 and Expo Router
+- React Native 0.86 and TypeScript
 - `react-native-maps`
 - Google Places API (New) and Routes API
 - ESLint and Prettier
@@ -40,8 +40,8 @@ npm start
    - `GOOGLE_MAPS_ANDROID_API_KEY`: restrict to Android app `com.codenzic.trippath` plus your signing certificate and Maps SDK for Android.
    - `GOOGLE_MAPS_IOS_API_KEY`: restrict to iOS bundle ID `com.codenzic.trippath` and Maps SDK for iOS.
    - `EXPO_PUBLIC_GOOGLE_PLACES_API_KEY`: Places API (New) only.
-   - `EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY`: Routes API only.
-4. **Important security note:** `EXPO_PUBLIC_*` keys are embedded in the client app and can be extracted. Do not put unrestricted web-service keys there. For production, proxy Places and Routes requests through a secured backend and keep those server keys there. Apply quotas and billing alerts.
+   - `EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY`: Routes API only (development/testing only; this key is exposed in the client bundle).
+4. **Security:** `EXPO_PUBLIC_*` keys are embedded in the client app and can be extracted. Restrict Places and Routes keys to only their required APIs, apply quotas and billing alerts, and use a secured backend proxy for production web-service requests. Never use a Places or Routes key as a native Maps SDK key.
 5. Rebuild the native app after changing native Maps SDK keys or config:
    ```bash
    npx expo run:ios
