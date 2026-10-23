@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { serializeForInlineScript } from '../utils/inlineScriptJson.mjs';
 import { StyleSheet, View } from 'react-native';
 
 export type Coordinate = {
@@ -27,8 +28,9 @@ export default function RouteMap({ start, pickup, end, dropoff, route, region }:
   const mapHtml = useMemo(() => {
     const startJson = JSON.stringify(start);
     const endJson = JSON.stringify(end);
-    const pickupJson = JSON.stringify(pickup);
-    const dropoffJson = JSON.stringify(dropoff);
+    // Escape HTML-significant characters so labels cannot terminate the script element.
+    const pickupJson = serializeForInlineScript(pickup);
+    const dropoffJson = serializeForInlineScript(dropoff);
     const routeJson = JSON.stringify(route);
     const regionJson = JSON.stringify(region);
 
@@ -136,12 +138,23 @@ export default function RouteMap({ start, pickup, end, dropoff, route, region }:
         iconAnchor: [9, 9]
       });
 
+      function popupContent(label, heading) {
+        const container = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = heading;
+        const value = document.createElement('div');
+        value.textContent = label;
+        container.appendChild(title);
+        container.appendChild(value);
+        return container;
+      }
+
       L.marker([start.latitude, start.longitude], { icon: startIcon, title: pickup })
-        .bindPopup('<b>Pickup</b><br>' + pickup)
+        .bindPopup(popupContent(pickup, 'Pickup'))
         .addTo(map);
 
       L.marker([end.latitude, end.longitude], { icon: endIcon, title: dropoff })
-        .bindPopup('<b>Destination</b><br>' + dropoff)
+        .bindPopup(popupContent(dropoff, 'Destination'))
         .addTo(map);
 
       function fitRoute() {

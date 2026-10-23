@@ -27,6 +27,8 @@ import {
   TriangleAlert,
 } from 'lucide-react-native';
 import { COLORS, FONTS, RADIUS } from '../constants/theme';
+import { parseCoordinate } from '../utils/coordinates.mjs';
+import { decodePolyline } from '../utils/polyline.mjs';
 
 type TravelMode = 'DRIVE' | 'TWO_WHEELER' | 'WALK';
 type Coordinate = { latitude: number; longitude: number };
@@ -39,34 +41,6 @@ const MODES: { key: TravelMode; label: string }[] = [
   { key: 'TWO_WHEELER', label: 'Ride' },
   { key: 'WALK', label: 'Walk' },
 ];
-
-function decodePolyline(encoded: string): Coordinate[] {
-  const points: Coordinate[] = [];
-  let index = 0,
-    latitude = 0,
-    longitude = 0;
-  while (index < encoded.length) {
-    let result = 0,
-      shift = 0,
-      byte = 0;
-    do {
-      byte = encoded.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-    latitude += result & 1 ? ~(result >> 1) : result >> 1;
-    result = 0;
-    shift = 0;
-    do {
-      byte = encoded.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-    longitude += result & 1 ? ~(result >> 1) : result >> 1;
-    points.push({ latitude: latitude / 1e5, longitude: longitude / 1e5 });
-  }
-  return points;
-}
 
 function formatDistance(meters: number) {
   return meters < 1000 ? Math.round(meters) + ' m' : (meters / 1000).toFixed(1) + ' km';
@@ -106,22 +80,62 @@ export default function RouteScreen() {
     dropoffLat?: string;
     dropoffLng?: string;
   }>();
-  const pickup = params.pickup ?? 'Pickup';
-  const dropoff = params.dropoff ?? 'Destination';
-  const start: Coordinate = useMemo(
-    () => ({
-      latitude: Number(params.pickupLat) || 9.9312,
-      longitude: Number(params.pickupLng) || 76.2673,
-    }),
+  const start = useMemo(
+    () => parseCoordinate(params.pickupLat, params.pickupLng),
     [params.pickupLat, params.pickupLng],
   );
-  const end: Coordinate = useMemo(
-    () => ({
-      latitude: Number(params.dropoffLat) || 10.0159,
-      longitude: Number(params.dropoffLng) || 76.3419,
-    }),
+  const end = useMemo(
+    () => parseCoordinate(params.dropoffLat, params.dropoffLng),
     [params.dropoffLat, params.dropoffLng],
   );
+
+  if (!start || !end) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.invalidState}>
+          <TriangleAlert size={40} color={COLORS.orange} />
+          <Text style={styles.invalidTitle}>Invalid locations</Text>
+          <Text style={styles.emptyText}>
+            Pickup and destination coordinates are missing or invalid. Choose both places again to
+            see a route.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.replace('/locations')}
+            style={styles.startButton}
+          >
+            <Text style={styles.startText}>Choose locations</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <RouteDetails
+      start={start}
+      end={end}
+      pickup={params.pickup ?? 'Pickup'}
+      dropoff={params.dropoff ?? 'Destination'}
+      bottomInset={insets.bottom}
+    />
+  );
+}
+
+function RouteDetails({
+  start,
+  end,
+  pickup,
+  dropoff,
+  bottomInset,
+}: {
+  start: Coordinate;
+  end: Coordinate;
+  pickup: string;
+  dropoff: string;
+  bottomInset: number;
+}) {
+  const router = useRouter();
   const [mode, setMode] = useState<TravelMode>('DRIVE');
   const [route, setRoute] = useState<Coordinate[]>([]);
   const [distance, setDistance] = useState('');
@@ -155,7 +169,7 @@ export default function RouteScreen() {
       setMessage(text);
     }
     async function fetchRoute() {
-      if (!ROUTES_KEY || !params.pickupLat || !params.dropoffLat) {
+      if (!ROUTES_KEY) {
         showError(
           'Add EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY to calculate road routes and travel time.',
           'Configuration required',
@@ -175,7 +189,9 @@ export default function RouteScreen() {
           },
           body: JSON.stringify({
             origin: {
-              location: { latLng: { latitude: start.latitude, longitude: start.longitude } },
+              location: {
+                latLng: { latitude: start.latitude, longitude: start.longitude },
+              },
             },
             destination: {
               location: { latLng: { latitude: end.latitude, longitude: end.longitude } },
@@ -251,7 +267,7 @@ export default function RouteScreen() {
     return () => {
       cancelled = true;
     };
-  }, [mode, params.pickupLat, params.dropoffLat, start, end]);
+  }, [mode, start, end]);
 
   const startNavigation = () => {
     Alert.alert('Open turn-by-turn navigation?', 'This opens Google Maps for live GPS guidance.', [
@@ -318,7 +334,7 @@ export default function RouteScreen() {
           <Layers size={20} color={COLORS.text} />
         </Pressable>
 
-        <View style={[styles.bottomSheet, { paddingBottom: 16 + insets.bottom }]}>
+        <View style={[styles.bottomSheet, { paddingBottom: 16 + bottomInset }]}>
           <View style={styles.handle} />
           <View style={styles.summaryHeader}>
             <View style={styles.summaryMain}>
@@ -416,6 +432,8 @@ export default function RouteScreen() {
 }
 
 const styles = StyleSheet.create({
+  invalidState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 12 },
+  invalidTitle: { color: COLORS.text, fontFamily: FONTS.extraBold, fontSize: 22 },
   safeArea: { flex: 1, backgroundColor: COLORS.white },
   container: { flex: 1, backgroundColor: '#E9E3D9' },
   mapButton: {
