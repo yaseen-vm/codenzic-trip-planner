@@ -1,30 +1,32 @@
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
+import { Lock, Mail } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS, FONTS, RADIUS } from '../constants/theme';
+import { CreateAccountModal, ForgotPasswordModal, isValidEmail } from '../components/AuthModals';
+import PrimaryButton from '../components/PrimaryButton';
+import TextField from '../components/TextField';
+import { COLORS, FONTS } from '../constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
 
-  const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const emailIsValid = isValidEmail(email);
   const emailError = submitted && !emailIsValid;
   const passwordError = submitted && password.length < 6;
 
@@ -81,75 +83,38 @@ export default function LoginScreen() {
             </Text>
 
             <View style={styles.form}>
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Email</Text>
-                <View style={styles.inputWrap}>
-                  <Mail size={18} color={COLORS.muted} style={styles.leadingIcon} />
-                  <TextInput
-                    accessibilityLabel="Email"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect={false}
-                    keyboardType="email-address"
-                    onChangeText={setEmail}
-                    placeholder="you@example.com"
-                    placeholderTextColor={COLORS.placeholder}
-                    returnKeyType="next"
-                    style={[styles.input, emailError && styles.inputError]}
-                    textContentType="emailAddress"
-                    value={email}
-                  />
-                </View>
-                {emailError ? (
-                  <Text style={styles.errorText}>Enter a valid email address.</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Password</Text>
-                <View style={[styles.passwordWrap, passwordError && styles.inputError]}>
-                  <Lock size={18} color={COLORS.muted} style={styles.leadingIcon} />
-                  <TextInput
-                    accessibilityLabel="Password"
-                    autoCapitalize="none"
-                    autoComplete="password"
-                    onChangeText={setPassword}
-                    placeholder="Enter your password"
-                    placeholderTextColor={COLORS.placeholder}
-                    returnKeyType="done"
-                    secureTextEntry={!showPassword}
-                    style={styles.passwordInput}
-                    textContentType="password"
-                    value={password}
-                    onSubmitEditing={handleLogin}
-                  />
-                  <Pressable
-                    accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                    accessibilityRole="button"
-                    hitSlop={10}
-                    onPress={() => setShowPassword((visible) => !visible)}
-                    style={styles.eyeButton}
-                  >
-                    {showPassword ? (
-                      <EyeOff size={18} color={COLORS.muted} />
-                    ) : (
-                      <Eye size={18} color={COLORS.muted} />
-                    )}
-                  </Pressable>
-                </View>
-                {passwordError ? (
-                  <Text style={styles.errorText}>Password must be at least 6 characters.</Text>
-                ) : null}
-              </View>
+              <TextField
+                label="Email"
+                icon={Mail}
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
+                keyboardType="email-address"
+                onChangeText={setEmail}
+                placeholder="you@example.com"
+                returnKeyType="next"
+                textContentType="emailAddress"
+                value={email}
+                error={emailError ? 'Enter a valid email address.' : undefined}
+              />
+              <TextField
+                label="Password"
+                icon={Lock}
+                password
+                autoCapitalize="none"
+                autoComplete="password"
+                onChangeText={setPassword}
+                placeholder="Enter your password"
+                returnKeyType="done"
+                textContentType="password"
+                value={password}
+                onSubmitEditing={handleLogin}
+                error={passwordError ? 'Password must be at least 6 characters.' : undefined}
+              />
 
               <Pressable
                 accessibilityRole="button"
-                onPress={() =>
-                  Alert.alert(
-                    'Forgot password?',
-                    'Password recovery will be available when authentication is connected.',
-                  )
-                }
+                onPress={() => setForgotOpen(true)}
                 style={styles.forgotButton}
               >
                 <Text style={styles.forgotText}>Forgot password?</Text>
@@ -158,31 +123,26 @@ export default function LoginScreen() {
           </ScrollView>
 
           <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={handleLogin}
-              style={({ pressed }) => [styles.loginButton, pressed && styles.loginButtonPressed]}
-            >
-              <Text style={styles.loginButtonText}>Log in</Text>
-            </Pressable>
+            <PrimaryButton label="Log in" onPress={handleLogin} />
             <View style={styles.signupRow}>
               <Text style={styles.signupMuted}>New to Wayfare? </Text>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() =>
-                  Alert.alert(
-                    'Create an account',
-                    'Account creation will be implemented with authentication.',
-                  )
-                }
-                hitSlop={8}
-              >
+              <Pressable accessibilityRole="button" onPress={() => setSignupOpen(true)} hitSlop={8}>
                 <Text style={styles.signupLink}>Create an account</Text>
               </Pressable>
             </View>
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <ForgotPasswordModal visible={forgotOpen} onClose={() => setForgotOpen(false)} />
+      <CreateAccountModal
+        visible={signupOpen}
+        onClose={() => setSignupOpen(false)}
+        onCreated={() => {
+          setSignupOpen(false);
+          router.push('/locations');
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -220,58 +180,6 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   form: { gap: 16 },
-  fieldGroup: { gap: 8 },
-  label: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 15 },
-  inputWrap: { justifyContent: 'center' },
-  leadingIcon: { position: 'absolute', left: 16, zIndex: 1 },
-  input: {
-    height: 54,
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderWidth: 1,
-    borderRadius: RADIUS.control,
-    paddingLeft: 45,
-    paddingRight: 17,
-    color: COLORS.text,
-    fontFamily: FONTS.semiBold,
-    fontSize: 15,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-  },
-  passwordWrap: {
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderWidth: 1,
-    borderRadius: RADIUS.control,
-    shadowColor: COLORS.text,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-  },
-  passwordInput: {
-    flex: 1,
-    height: '100%',
-    paddingLeft: 44,
-    paddingRight: 8,
-    color: COLORS.text,
-    fontFamily: FONTS.semiBold,
-    fontSize: 15,
-  },
-  eyeButton: {
-    width: 40,
-    height: 40,
-    marginRight: 7,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputError: { borderColor: COLORS.orange },
-  errorText: { color: COLORS.orange, fontFamily: FONTS.regular, fontSize: 13 },
   forgotButton: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 1 },
   forgotText: { color: COLORS.orange, fontFamily: FONTS.bold, fontSize: 14, lineHeight: 21 },
   footer: {
@@ -281,15 +189,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
   },
-  loginButton: {
-    height: 56,
-    backgroundColor: COLORS.orange,
-    borderRadius: RADIUS.control,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loginButtonPressed: { opacity: 0.88 },
-  loginButtonText: { color: COLORS.white, fontFamily: FONTS.extraBold, fontSize: 17 },
   signupRow: {
     flexDirection: 'row',
     justifyContent: 'center',

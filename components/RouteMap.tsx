@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import { MAP_PROVIDER, MAP_STYLE } from './mapConfig';
 
 export type Coordinate = {
   latitude: number;
@@ -25,12 +25,6 @@ export interface RouteMapProps {
   region: MapRegion;
   satellite?: boolean;
 }
-
-// Expo Go on iOS has no Google Maps SDK; forcing it leaves the map blank and onMapReady never fires.
-const MAP_PROVIDER =
-  Platform.OS === 'ios' && Constants.executionEnvironment === ExecutionEnvironment.StoreClient
-    ? undefined
-    : PROVIDER_GOOGLE;
 
 const STROKE = { stroke: '#fff', strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
 
@@ -96,24 +90,6 @@ const COLORS = {
   orange: '#F1521F',
   white: '#FFFFFF',
 };
-
-// Muted beige/blue basemap from the design; satellite mode ignores it.
-const MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#ECE7DD' }] },
-  { elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#7C8B99' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#F5F6F7' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
-  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ visibility: 'off' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#9FC4D8' }] },
-  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  {
-    featureType: 'poi.park',
-    elementType: 'geometry',
-    stylers: [{ color: '#DDE5D3' }, { visibility: 'on' }],
-  },
-];
 
 export default function RouteMap({
   start,

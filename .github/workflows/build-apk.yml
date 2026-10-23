@@ -1,0 +1,80 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apk-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write # Needed to publish the rolling "apk-latest" release on pushes to the default branch.
+    env:
+      # Native Maps SDK key is baked in during prebuild; the other two are bundled by Metro.
+      GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
+      EXPO_PUBLIC_GOOGLE_PLACES_API_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY }}
+      EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Rename APK
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk "TripPath-${GITHUB_SHA::7}.apk"
+          ls -lh TripPath-*.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TripPath-apk
+          path: TripPath-*.apk
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish rolling release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete apk-latest --cleanup-tag --yes || true
+          gh release create apk-latest TripPath-*.apk \
+            --prerelease \
+            --title "Latest APK" \
+            --notes "Built from commit ${GITHUB_SHA} on ${GITHUB_REF_NAME}."
