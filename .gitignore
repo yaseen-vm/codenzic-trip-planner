@@ -2,6 +2,7 @@ node_modules/
 .expo/
 .expo-shared/
 dist/
+coverage/
 build/
 *.log
 .env
