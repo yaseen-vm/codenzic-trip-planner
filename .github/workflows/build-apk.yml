@@ -51,6 +51,21 @@ jobs:
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
 
+      # R8 strips the Room class WorkManager needs at startup, crashing the app on launch
+      # (androidx.work.impl.WorkDatabase). Skip shrinking and keep Room databases as a backstop.
+      - name: Disable R8 shrinking
+        run: |
+          {
+            echo ""
+            echo "android.enableMinifyInReleaseBuilds=false"
+            echo "android.enableShrinkResourcesInReleaseBuilds=false"
+          } >> android/gradle.properties
+          {
+            echo ""
+            echo "-keep class androidx.work.impl.WorkDatabase_Impl { *; }"
+            echo "-keep class * extends androidx.room.RoomDatabase { *; }"
+          } >> android/app/proguard-rules.pro
+
       - name: Build release APK
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon
