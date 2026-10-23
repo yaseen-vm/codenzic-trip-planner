@@ -30,6 +30,7 @@ import {
 import MapPicker from '../components/MapPicker';
 import { COLORS, FONTS, RADIUS } from '../constants/theme';
 import { SAVED_PLACES, SavedPlace } from '../constants/savedPlaces';
+import { isCurrentRequest } from '../utils/requestGuard.mjs';
 
 const PLACES_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY;
 const newSessionToken = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2);
@@ -77,7 +78,7 @@ export default function SetLocationsScreen() {
     if (timer.current) clearTimeout(timer.current);
     if (query.trim().length < 3 || selected?.label === query || !PLACES_KEY) {
       timer.current = setTimeout(() => {
-        if (requestId === autocompleteRequestId.current) {
+        if (isCurrentRequest(requestId, autocompleteRequestId.current)) {
           setSuggestions([]);
           setLoading(false);
         }
@@ -99,7 +100,7 @@ export default function SetLocationsScreen() {
         });
         if (!response.ok) throw new Error('Places autocomplete request failed');
         const data = await response.json();
-        if (requestId !== autocompleteRequestId.current) return;
+        if (!isCurrentRequest(requestId, autocompleteRequestId.current)) return;
         setSuggestions(
           (data.suggestions ?? []).flatMap((item: any) => {
             const prediction = item.placePrediction;
@@ -109,9 +110,9 @@ export default function SetLocationsScreen() {
           }),
         );
       } catch {
-        if (requestId === autocompleteRequestId.current) setSuggestions([]);
+        if (isCurrentRequest(requestId, autocompleteRequestId.current)) setSuggestions([]);
       } finally {
-        if (requestId === autocompleteRequestId.current) setLoading(false);
+        if (isCurrentRequest(requestId, autocompleteRequestId.current)) setLoading(false);
       }
     }, 300);
     return () => {
