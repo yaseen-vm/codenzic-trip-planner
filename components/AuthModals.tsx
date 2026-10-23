@@ -45,7 +45,9 @@ export function ForgotPasswordModal({ visible, onClose }: ModalProps) {
       visible={visible}
       onClose={close}
       title="Forgot password?"
-      subtitle={sent ? undefined : 'Demo only — no reset email is sent. Enter an email to preview the flow.'}
+      subtitle={
+        sent ? undefined : 'Demo only — no reset email is sent. Enter an email to preview the flow.'
+      }
     >
       {sent ? (
         <>
