@@ -76,7 +76,12 @@ export default function SetLocationsScreen() {
     const selected = activeField === 'pickup' ? pickupPlace : dropoffPlace;
     if (timer.current) clearTimeout(timer.current);
     if (query.trim().length < 3 || selected?.label === query || !PLACES_KEY) {
-      timer.current = setTimeout(() => { if (requestId === autocompleteRequestId.current) { setSuggestions([]); setLoading(false); } }, 0);
+      timer.current = setTimeout(() => {
+        if (requestId === autocompleteRequestId.current) {
+          setSuggestions([]);
+          setLoading(false);
+        }
+      }, 0);
       return;
     }
     timer.current = setTimeout(async () => {

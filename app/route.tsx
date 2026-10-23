@@ -111,8 +111,14 @@ export default function RouteScreen() {
   }>();
   const pickup = params.pickup ?? 'Pickup';
   const dropoff = params.dropoff ?? 'Destination';
-  const start = useMemo(() => parseCoordinate(params.pickupLat, params.pickupLng), [params.pickupLat, params.pickupLng]);
-  const end = useMemo(() => parseCoordinate(params.dropoffLat, params.dropoffLng), [params.dropoffLat, params.dropoffLng]);
+  const start = useMemo(
+    () => parseCoordinate(params.pickupLat, params.pickupLng),
+    [params.pickupLat, params.pickupLng],
+  );
+  const end = useMemo(
+    () => parseCoordinate(params.dropoffLat, params.dropoffLng),
+    [params.dropoffLat, params.dropoffLng],
+  );
   const coordinatesValid = start !== null && end !== null;
   const safeStart = start ?? DEFAULT_REGION;
   const safeEnd = end ?? DEFAULT_REGION;
@@ -150,7 +156,10 @@ export default function RouteScreen() {
     }
     async function fetchRoute() {
       if (!coordinatesValid) {
-        showError('Pickup and destination coordinates are missing or invalid. Return to location selection and choose both places again.', 'Invalid locations');
+        showError(
+          'Pickup and destination coordinates are missing or invalid. Return to location selection and choose both places again.',
+          'Invalid locations',
+        );
         return;
       }
       if (!ROUTES_KEY) {
@@ -173,7 +182,9 @@ export default function RouteScreen() {
           },
           body: JSON.stringify({
             origin: {
-              location: { latLng: { latitude: safeStart.latitude, longitude: safeStart.longitude } },
+              location: {
+                latLng: { latitude: safeStart.latitude, longitude: safeStart.longitude },
+              },
             },
             destination: {
               location: { latLng: { latitude: safeEnd.latitude, longitude: safeEnd.longitude } },
@@ -249,7 +260,16 @@ export default function RouteScreen() {
     return () => {
       cancelled = true;
     };
-  }, [mode, coordinatesValid, params.pickupLat, params.pickupLng, params.dropoffLat, params.dropoffLng, safeStart, safeEnd]);
+  }, [
+    mode,
+    coordinatesValid,
+    params.pickupLat,
+    params.pickupLng,
+    params.dropoffLat,
+    params.dropoffLng,
+    safeStart,
+    safeEnd,
+  ]);
 
   const startNavigation = () => {
     Alert.alert('Open turn-by-turn navigation?', 'This opens Google Maps for live GPS guidance.', [
