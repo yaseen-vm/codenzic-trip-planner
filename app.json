@@ -6,7 +6,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "TripPath uses your location to set your pickup point."
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },

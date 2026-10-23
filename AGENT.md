@@ -1,5 +1,7 @@
 # AGENT.md — TripPath: Codenzic Innovations Assignment
 
+> **Status note:** this document is the original pre-development plan. The shipped app differs (light theme with orange accent, flat Expo Router files in `app/`, local component state, no auth context, Google Places/Routes instead of mock data). The current state is in [README.md](README.md) and [PROJECT-SETUP.md](docs/PROJECT-SETUP.md).
+
 > This file is the **single source of truth** for any AI agent, developer, or collaborator picking up this project.
 > Read this file first before touching any other file. Everything you need to know about the project — what it is,
 > how it's structured, what conventions to follow, how to build it, and how to ship it — is documented here or

@@ -2,18 +2,47 @@
 
 A React Native and Expo trip-planning app for Android and iOS, built for the Codenzic Innovations technical evaluation.
 
-## Current implementation
+## Assignment coverage
 
-- Login screen styled to match the supplied reference (authentication is still a demo).
-- Google Places (New) autocomplete for pickup and destination, with coordinates retained from selected places.
-- Native Google Maps map view with pickup/drop-off markers and a Google Routes API road polyline.
-- Route distance, duration, turn instructions, drive/two-wheeler/walk mode selection, and a hand-off to Google Maps for live turn-by-turn navigation.
-- Responsive layouts, safe-area handling, and basic input validation.
+Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
+
+| Requirement                                                                   | Status | What is implemented                                                                                                                                                                                                                                                                                                                                     | Where                                                                       |
+| ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **1. Login** – email/password, validation, login, create account              | ✅     | Email and password fields, regex email check, minimum 6-character password, inline errors, show/hide password. "Forgot password?" and "Create an account" open in-app modals (reset email form; name/email/password/confirm form with validation and a success state). Authentication itself is a demo: no backend.                                     | `app/login.tsx`, `components/AuthModals.tsx`                                |
+| **2. Set Locations** – start/destination, current vs manual, suggestions list | ✅     | Pickup and drop-off fields, swap and clear, saved/recent places (mock data), live Google Places (New) autocomplete when a key is set. **Use current** requests location permission via `expo-location` and reverse-geocodes the fix. **Pick on map** opens a full-screen map with a centre pin. "Next" is disabled until both are chosen and different. | `app/locations.tsx`, `components/MapPicker.tsx`, `constants/savedPlaces.ts` |
+| **3. Trip Ready** – selected trip info, proceed action                        | ✅     | The Figma "Trip ready" frame is the Set Locations screen with the drop-off field active, so there is no separate screen. The selected pickup and drop-off are confirmed by the filled fields, and "Next" proceeds to Route View, where both are shown again in the sheet.                                                                               | `app/locations.tsx`, `app/route.tsx`                                        |
+| **4. Route View** – map, ETA, route info, start navigation                    | ✅     | Google Map with start/end markers and road polyline, duration, distance, arrival time, drive/ride/walk modes, traffic warning, turn-by-turn list, satellite toggle, "Start navigation" hands off to Google Maps. Web falls back to a placeholder map.                                                                                                   | `app/route.tsx`, `components/RouteMap.tsx`, `components/RouteMap.web.tsx`   |
+
+| Technical expectation                  | Status | Notes                                                                                                                                                     |
+| -------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| React Native + Expo                    | ✅     | Expo SDK 58, React Native 0.88, TypeScript                                                                                                                |
+| Proper navigation                      | ✅     | Expo Router stack: `/` → `/login` → `/locations` → `/route`; route params carry the selected places                                                       |
+| Responsive UI matching Figma           | ✅     | Shared tokens in `constants/theme.ts`, Nunito Sans, safe-area handling. Matched by hand in commit `02532c5`; no automated visual comparison               |
+| Component-based, reusable architecture | ⚠️     | Screens are large single files with local `StyleSheet`s; only `RouteMap` is extracted. Extracting inputs, buttons and list rows is the main refactor left |
+| Application state                      | ⚠️     | Local `useState` per screen, selection passed via router params. No global store (not needed for this flow)                                               |
+| Basic form validation                  | ✅     | Login (email format, password length) and locations (both required, must differ)                                                                          |
+| Mock/static data                       | ✅     | Saved places are static; routes and places use Google APIs when keys are configured                                                                       |
+| Clean code                             | ✅     | `npm run check` (type-check, ESLint, Prettier) and a CI workflow                                                                                          |
+
+### Deliverables
+
+| Deliverable                    | Status                                                                                                                            |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub repository              | ✅                                                                                                                                |
+| README with setup instructions | ✅ (this file)                                                                                                                    |
+| APK                            | ✅ built by CI (`build-apk.yml`); download from the Actions artifact or the Latest APK release. See [Build an APK](#build-an-apk) |
+
+### Known gaps / next steps
+
+1. Add the three Google API keys as repository secrets, then confirm the first CI APK build succeeds and install it on a device.
+2. Real authentication behind the login and create-account modals.
+3. Extract the location list row from `app/locations.tsx`.
+4. Native checks of Use current, Pick on map and the modals on a device/emulator have not been run. `expo-location` was added to the app config, so rebuild the dev client (`npx expo run:android`).
 
 ## Tech stack
 
-- Expo SDK 57 and Expo Router
-- React Native 0.86 and TypeScript
+- Expo SDK 58 and Expo Router
+- React Native 0.88 and TypeScript
 - `react-native-maps`
 - Google Places API (New) and Routes API
 - ESLint and Prettier
@@ -51,6 +80,20 @@ npm start
 
 The `.env` file is ignored by Git. No live keys are stored in this repository.
 
+## Build an APK
+
+**CI (recommended):** the `Build Android APK` workflow (`.github/workflows/build-apk.yml`) runs on every push and pull request to `master`/`main`, and can be started manually from the Actions tab. It runs `expo prebuild`, then `./gradlew assembleRelease`, and uploads the APK as the `TripPath-apk` artifact. On pushes to the default branch it also refreshes the **Latest APK** release (`apk-latest`) on GitHub, which gives a stable download link.
+
+Add these repository secrets (Settings → Secrets and variables → Actions) so the built app has working maps:
+
+- `GOOGLE_MAPS_ANDROID_API_KEY`
+- `EXPO_PUBLIC_GOOGLE_PLACES_API_KEY`
+- `EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY`
+
+The APK is signed with the default debug keystore, which is fine for sideloading and review but not for the Play Store. Pull requests from forks do not receive secrets, so their APK has no live maps. Restrict the Android key to `com.codenzic.trippath` and the SHA-1 of the signing keystore.
+
+**EAS (alternative):** `eas build --profile preview --platform android` (the `preview` profile is set to produce an APK).
+
 ## Quality checks
 
 ```bash
@@ -60,18 +103,26 @@ npm run format:check
 npm run check
 ```
 
-Run these checks locally before merging. A native iOS/Android smoke test is also required; these checks have not been run as part of the GitHub edits.
+Run these checks locally before merging. A native iOS/Android smoke test is also required.
 
 ## Project structure
 
 ```text
 app/
-  _layout.tsx
-  index.tsx
+  _layout.tsx       fonts, safe area, stack navigator
+  index.tsx         redirects to /login
   login.tsx
   locations.tsx
   route.tsx
-docs/
+components/
+  AppModal, AuthModals, TextField, PrimaryButton, TripPlaces
+  MapPicker.tsx     map pin picker (+ .web fallback)
+  RouteMap.tsx      native Google Map (+ .web fallback)
+  mapConfig.ts      native map provider and style
+constants/
+  theme.ts          colors, fonts, radii
+  savedPlaces.ts    mock saved places
+docs/               original plan (01-11) and setup notes
 ```
 
 ## License
