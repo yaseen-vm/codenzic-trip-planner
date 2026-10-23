@@ -45,12 +45,12 @@ export function ForgotPasswordModal({ visible, onClose }: ModalProps) {
       visible={visible}
       onClose={close}
       title="Forgot password?"
-      subtitle={sent ? undefined : 'Enter your email and we will send you a link to reset it.'}
+      subtitle={sent ? undefined : 'Demo only — no reset email is sent. Enter an email to preview the flow.'}
     >
       {sent ? (
         <>
           <SuccessMessage
-            text={'If an account exists for ' + email.trim() + ', a reset link is on its way.'}
+            text={'Demo complete for ' + email.trim() + '. No reset email was sent.'}
           />
           <PrimaryButton label="Back to log in" onPress={close} />
         </>
@@ -126,11 +126,11 @@ export function CreateAccountModal({ visible, onClose, onCreated }: CreateAccoun
       visible={visible}
       onClose={close}
       title={created ? 'Account created' : 'Create an account'}
-      subtitle={created ? undefined : 'Sign up to start planning your trips.'}
+      subtitle={created ? undefined : 'Demo only — this form does not create a real account.'}
     >
       {created ? (
         <>
-          <SuccessMessage text={'Welcome, ' + name.trim() + '! Your account is ready.'} />
+          <SuccessMessage text={'Demo complete, ' + name.trim() + '. No account was created.'} />
           <PrimaryButton label="Start planning" onPress={finish} />
         </>
       ) : (
