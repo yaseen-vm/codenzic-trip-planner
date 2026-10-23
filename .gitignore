@@ -21,3 +21,5 @@ Thumbs.db
 
 expo-env.d.ts
 # @end expo-cli
+# Generated native project (recreate with expo prebuild); contains API keys
+android/
