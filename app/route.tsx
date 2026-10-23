@@ -27,6 +27,7 @@ import {
   TriangleAlert,
 } from 'lucide-react-native';
 import { COLORS, FONTS, RADIUS } from '../constants/theme';
+import { parseCoordinate } from '../utils/coordinates.mjs';
 
 type TravelMode = 'DRIVE' | 'TWO_WHEELER' | 'WALK';
 type Coordinate = { latitude: number; longitude: number };
@@ -35,14 +36,6 @@ const ROUTES_KEY = process.env.EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY;
 const MAX_STEPS = 20;
 
 const DEFAULT_REGION: Coordinate = { latitude: 9.9312, longitude: 76.2673 };
-
-function parseCoordinate(latitude?: string, longitude?: string): Coordinate | null {
-  if (latitude == null || longitude == null || latitude.trim() === '' || longitude.trim() === '') return null;
-  const lat = Number(latitude);
-  const lng = Number(longitude);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
-  return { latitude: lat, longitude: lng };
-}
 
 const MODES: { key: TravelMode; label: string }[] = [
   { key: 'DRIVE', label: 'Drive' },
