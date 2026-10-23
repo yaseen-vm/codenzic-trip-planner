@@ -22,7 +22,7 @@ Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
 | Application state                      | ⚠️     | Local `useState` per screen, selection passed via router params. No global store (not needed for this flow)                                               |
 | Basic form validation                  | ✅     | Login (email format, password length) and locations (both required, must differ)                                                                          |
 | Mock/static data                       | ✅     | Saved places are static; routes and places use Google APIs when keys are configured                                                                       |
-| Clean code                             | ✅     | `npm run check` (unit tests, type-check, ESLint, Prettier) and a CI workflow                                                                                          |
+| Clean code                             | ✅     | `npm run check` (type-check, ESLint, Prettier) and a CI workflow                                                                                          |
 
 ### Deliverables
 
