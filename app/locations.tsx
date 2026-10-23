@@ -30,6 +30,7 @@ import {
 import MapPicker from '../components/MapPicker';
 import { COLORS, FONTS, RADIUS } from '../constants/theme';
 import { SAVED_PLACES, SavedPlace } from '../constants/savedPlaces';
+import { fetchSuggestions } from '../utils/places.mjs';
 import { isCurrentRequest } from '../utils/requestGuard.mjs';
 
 const PLACES_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY;
@@ -64,6 +65,7 @@ export default function SetLocationsScreen() {
   const [activeField, setActiveField] = useState<'pickup' | 'dropoff'>('pickup');
   const [suggestions, setSuggestions] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [suggestionError, setSuggestionError] = useState(false);
   const [locating, setLocating] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [notice, setNotice] = useState('');
@@ -73,49 +75,45 @@ export default function SetLocationsScreen() {
 
   useEffect(() => {
     const requestId = ++autocompleteRequestId.current;
+    const controller = new AbortController();
+    const isCurrent = () => isCurrentRequest(requestId, autocompleteRequestId.current);
     const query = activeField === 'pickup' ? pickup : dropoff;
     const selected = activeField === 'pickup' ? pickupPlace : dropoffPlace;
     if (timer.current) clearTimeout(timer.current);
     if (query.trim().length < 3 || selected?.label === query || !PLACES_KEY) {
       timer.current = setTimeout(() => {
-        if (isCurrentRequest(requestId, autocompleteRequestId.current)) {
+        if (isCurrent()) {
           setSuggestions([]);
+          setSuggestionError(false);
           setLoading(false);
         }
       }, 0);
-      return;
+      return () => {
+        if (timer.current) clearTimeout(timer.current);
+      };
     }
     timer.current = setTimeout(async () => {
       setLoading(true);
+      setSuggestionError(false);
       try {
-        const response = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': PLACES_KEY,
-            'X-Goog-FieldMask':
-              'suggestions.placePrediction.placeId,suggestions.placePrediction.text.text',
-          },
-          body: JSON.stringify({ input: query, sessionToken: sessionToken.current }),
+        const results = await fetchSuggestions({
+          query,
+          apiKey: PLACES_KEY,
+          sessionToken: sessionToken.current,
+          signal: controller.signal,
         });
-        if (!response.ok) throw new Error('Places autocomplete request failed');
-        const data = await response.json();
-        if (!isCurrentRequest(requestId, autocompleteRequestId.current)) return;
-        setSuggestions(
-          (data.suggestions ?? []).flatMap((item: any) => {
-            const prediction = item.placePrediction;
-            return prediction
-              ? [{ placeId: prediction.placeId, description: prediction.text.text }]
-              : [];
-          }),
-        );
+        if (!isCurrent()) return;
+        setSuggestions(results);
       } catch {
-        if (isCurrentRequest(requestId, autocompleteRequestId.current)) setSuggestions([]);
+        if (!isCurrent()) return;
+        setSuggestions([]);
+        setSuggestionError(true);
       } finally {
-        if (isCurrentRequest(requestId, autocompleteRequestId.current)) setLoading(false);
+        if (isCurrent()) setLoading(false);
       }
     }, 300);
     return () => {
+      controller.abort();
       if (timer.current) clearTimeout(timer.current);
     };
   }, [pickup, dropoff, activeField, pickupPlace, dropoffPlace]);
@@ -405,6 +403,14 @@ export default function SetLocationsScreen() {
             </View>
           ) : null}
 
+          {suggestionError ? (
+            <View style={styles.notice}>
+              <Text accessibilityRole="alert" style={styles.noticeText}>
+                Could not load suggestions. Check your connection and keep typing to try again.
+              </Text>
+            </View>
+          ) : null}
+
           {notice ? (
             <View style={styles.notice}>
               <Text style={styles.noticeText}>{notice}</Text>
@@ -441,7 +447,13 @@ export default function SetLocationsScreen() {
           <Text style={styles.sectionLabel}>
             {activeField === 'pickup' ? 'Set as pickup' : 'Set as drop-off'}
           </Text>
-          {loading ? <ActivityIndicator style={styles.loader} color={COLORS.orange} /> : null}
+          {loading ? (
+            <ActivityIndicator
+              accessibilityLabel="Loading suggestions"
+              style={styles.loader}
+              color={COLORS.orange}
+            />
+          ) : null}
           {rows.length ? (
             <View style={styles.list}>
               {rows.map((row, index) => (

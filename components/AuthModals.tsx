@@ -6,7 +6,9 @@ import PrimaryButton from './PrimaryButton';
 import TextField from './TextField';
 import { COLORS, FONTS } from '../constants/theme';
 
-export const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+import { hasErrors, isValidEmail, validateSignup } from '../utils/auth.mjs';
+
+export { isValidEmail };
 
 interface ModalProps {
   visible: boolean;
@@ -44,7 +46,7 @@ export function ForgotPasswordModal({ visible, onClose }: ModalProps) {
     <AppModal
       visible={visible}
       onClose={close}
-      title="Forgot password?"
+      title="Forgot password? (demo)"
       subtitle={
         sent ? undefined : 'Demo only — no reset email is sent. Enter an email to preview the flow.'
       }
@@ -91,12 +93,7 @@ export function CreateAccountModal({ visible, onClose, onCreated }: CreateAccoun
   const [submitted, setSubmitted] = useState(false);
   const [created, setCreated] = useState(false);
 
-  const errors = {
-    name: name.trim() ? undefined : 'Enter your name.',
-    email: isValidEmail(email) ? undefined : 'Enter a valid email address.',
-    password: password.length >= 6 ? undefined : 'Password must be at least 6 characters.',
-    confirm: confirm === password ? undefined : 'Passwords do not match.',
-  };
+  const errors = validateSignup({ name, email, password, confirm });
   const show = (key: keyof typeof errors) => (submitted ? errors[key] : undefined);
 
   const reset = () => {
@@ -115,7 +112,7 @@ export function CreateAccountModal({ visible, onClose, onCreated }: CreateAccoun
 
   const submit = () => {
     setSubmitted(true);
-    if (Object.values(errors).every((error) => !error)) setCreated(true);
+    if (!hasErrors(errors)) setCreated(true);
   };
 
   const finish = () => {
@@ -127,13 +124,13 @@ export function CreateAccountModal({ visible, onClose, onCreated }: CreateAccoun
     <AppModal
       visible={visible}
       onClose={close}
-      title={created ? 'Account created' : 'Create an account'}
+      title={created ? 'Demo sign-up complete' : 'Create an account (demo)'}
       subtitle={created ? undefined : 'Demo only — this form does not create a real account.'}
     >
       {created ? (
         <>
           <SuccessMessage text={'Demo complete, ' + name.trim() + '. No account was created.'} />
-          <PrimaryButton label="Start planning" onPress={finish} />
+          <PrimaryButton label="Continue in demo mode" onPress={finish} />
         </>
       ) : (
         <View style={styles.form}>

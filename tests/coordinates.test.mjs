@@ -31,3 +31,10 @@ test('rejects non-finite and out-of-range coordinates', () => {
   assert.equal(parseCoordinate('90.01', '76'), null);
   assert.equal(parseCoordinate('9', '-180.01'), null);
 });
+
+test('rejects hex, exponent and other non-decimal strings that Number() would accept', () => {
+  assert.equal(parseCoordinate('0x10', '76'), null);
+  assert.equal(parseCoordinate('1e1', '76'), null);
+  assert.equal(parseCoordinate('9', '7 6'), null);
+  assert.deepEqual(parseCoordinate(' -9.5 ', '+.5'), { latitude: -9.5, longitude: 0.5 });
+});
