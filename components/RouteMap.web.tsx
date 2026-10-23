@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { serializeForInlineScript } from '../utils/inlineScriptJson.mjs';
 import { StyleSheet, View } from 'react-native';
 
 export type Coordinate = {
@@ -28,8 +29,8 @@ export default function RouteMap({ start, pickup, end, dropoff, route, region }:
     const startJson = JSON.stringify(start);
     const endJson = JSON.stringify(end);
     // Escape HTML-significant characters so labels cannot terminate the script element.
-    const pickupJson = JSON.stringify(pickup).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
-    const dropoffJson = JSON.stringify(dropoff).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+    const pickupJson = serializeForInlineScript(pickup);
+    const dropoffJson = serializeForInlineScript(dropoff);
     const routeJson = JSON.stringify(route);
     const regionJson = JSON.stringify(region);
 
