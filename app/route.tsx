@@ -34,6 +34,16 @@ type Step = { title: string; subtitle?: string; distanceMeters?: number; maneuve
 const ROUTES_KEY = process.env.EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY;
 const MAX_STEPS = 20;
 
+const DEFAULT_REGION: Coordinate = { latitude: 9.9312, longitude: 76.2673 };
+
+function parseCoordinate(latitude?: string, longitude?: string): Coordinate | null {
+  if (latitude == null || longitude == null || latitude.trim() === '' || longitude.trim() === '') return null;
+  const lat = Number(latitude);
+  const lng = Number(longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { latitude: lat, longitude: lng };
+}
+
 const MODES: { key: TravelMode; label: string }[] = [
   { key: 'DRIVE', label: 'Drive' },
   { key: 'TWO_WHEELER', label: 'Ride' },
@@ -108,20 +118,11 @@ export default function RouteScreen() {
   }>();
   const pickup = params.pickup ?? 'Pickup';
   const dropoff = params.dropoff ?? 'Destination';
-  const start: Coordinate = useMemo(
-    () => ({
-      latitude: Number(params.pickupLat) || 9.9312,
-      longitude: Number(params.pickupLng) || 76.2673,
-    }),
-    [params.pickupLat, params.pickupLng],
-  );
-  const end: Coordinate = useMemo(
-    () => ({
-      latitude: Number(params.dropoffLat) || 10.0159,
-      longitude: Number(params.dropoffLng) || 76.3419,
-    }),
-    [params.dropoffLat, params.dropoffLng],
-  );
+  const start = useMemo(() => parseCoordinate(params.pickupLat, params.pickupLng), [params.pickupLat, params.pickupLng]);
+  const end = useMemo(() => parseCoordinate(params.dropoffLat, params.dropoffLng), [params.dropoffLat, params.dropoffLng]);
+  const coordinatesValid = start !== null && end !== null;
+  const safeStart = start ?? DEFAULT_REGION;
+  const safeEnd = end ?? DEFAULT_REGION;
   const [mode, setMode] = useState<TravelMode>('DRIVE');
   const [route, setRoute] = useState<Coordinate[]>([]);
   const [distance, setDistance] = useState('');
@@ -135,12 +136,12 @@ export default function RouteScreen() {
 
   const region: MapRegion = useMemo(
     () => ({
-      latitude: (start.latitude + end.latitude) / 2,
-      longitude: (start.longitude + end.longitude) / 2,
-      latitudeDelta: Math.max(Math.abs(start.latitude - end.latitude) * 2.3, 0.025),
-      longitudeDelta: Math.max(Math.abs(start.longitude - end.longitude) * 2.3, 0.025),
+      latitude: (safeStart.latitude + safeEnd.latitude) / 2,
+      longitude: (safeStart.longitude + safeEnd.longitude) / 2,
+      latitudeDelta: Math.max(Math.abs(safeStart.latitude - safeEnd.latitude) * 2.3, 0.025),
+      longitudeDelta: Math.max(Math.abs(safeStart.longitude - safeEnd.longitude) * 2.3, 0.025),
     }),
-    [start.latitude, start.longitude, end.latitude, end.longitude],
+    [safeStart.latitude, safeStart.longitude, safeEnd.latitude, safeEnd.longitude],
   );
 
   useEffect(() => {
@@ -155,7 +156,11 @@ export default function RouteScreen() {
       setMessage(text);
     }
     async function fetchRoute() {
-      if (!ROUTES_KEY || !params.pickupLat || !params.dropoffLat) {
+      if (!coordinatesValid) {
+        showError('Pickup and destination coordinates are missing or invalid. Return to location selection and choose both places again.', 'Invalid locations');
+        return;
+      }
+      if (!ROUTES_KEY) {
         showError(
           'Add EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY to calculate road routes and travel time.',
           'Configuration required',
@@ -175,10 +180,10 @@ export default function RouteScreen() {
           },
           body: JSON.stringify({
             origin: {
-              location: { latLng: { latitude: start.latitude, longitude: start.longitude } },
+              location: { latLng: { latitude: safeStart.latitude, longitude: safeStart.longitude } },
             },
             destination: {
-              location: { latLng: { latitude: end.latitude, longitude: end.longitude } },
+              location: { latLng: { latitude: safeEnd.latitude, longitude: safeEnd.longitude } },
             },
             travelMode: mode,
             routingPreference: mode === 'DRIVE' ? 'TRAFFIC_AWARE' : 'TRAFFIC_UNAWARE',
@@ -251,7 +256,7 @@ export default function RouteScreen() {
     return () => {
       cancelled = true;
     };
-  }, [mode, params.pickupLat, params.dropoffLat, start, end]);
+  }, [mode, coordinatesValid, params.pickupLat, params.pickupLng, params.dropoffLat, params.dropoffLng, safeStart, safeEnd]);
 
   const startNavigation = () => {
     Alert.alert('Open turn-by-turn navigation?', 'This opens Google Maps for live GPS guidance.', [
@@ -261,13 +266,13 @@ export default function RouteScreen() {
         onPress: () => {
           const url =
             'https://www.google.com/maps/dir/?api=1&origin=' +
-            start.latitude +
+            safeStart.latitude +
             ',' +
-            start.longitude +
+            safeStart.longitude +
             '&destination=' +
-            end.latitude +
+            safeEnd.latitude +
             ',' +
-            end.longitude +
+            safeEnd.longitude +
             '&travelmode=' +
             (mode === 'WALK' ? 'walking' : mode === 'TWO_WHEELER' ? 'bicycling' : 'driving');
           Linking.openURL(url);
@@ -284,9 +289,9 @@ export default function RouteScreen() {
       <View style={styles.container}>
         <View style={styles.mapArea}>
           <RouteMap
-            start={start}
+            start={safeStart}
             pickup={pickup}
-            end={end}
+            end={safeEnd}
             dropoff={dropoff}
             route={route}
             region={region}
