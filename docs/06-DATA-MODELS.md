@@ -36,7 +36,7 @@ export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;         // True while AsyncStorage is being read on app boot
+  isLoading: boolean; // True while AsyncStorage is being read on app boot
 }
 
 export interface AuthContextValue extends AuthState {
@@ -56,7 +56,7 @@ export interface Location {
   address: string;
   coordinates: Coordinate;
   type: LocationType;
-  distance?: string;          // e.g., "2.1 km" — pre-computed for display
+  distance?: string; // e.g., "2.1 km" — pre-computed for display
 }
 
 // ─────────────────────────────────────────────
@@ -69,8 +69,8 @@ export interface Trip {
   id: string;
   from: Location;
   to: Location;
-  distance: string;           // e.g., "12.4 km"
-  estimatedDuration: string;  // e.g., "24 min" or "1h 15min"
+  distance: string; // e.g., "12.4 km"
+  estimatedDuration: string; // e.g., "24 min" or "1h 15min"
   travelMode: TravelMode;
   routeCoordinates: Coordinate[];
   createdAt: Date;
@@ -102,8 +102,8 @@ export interface TripContextValue extends TripState {
 export type RootStackParamList = {
   '(auth)/login': undefined;
   '(app)/set-locations': undefined;
-  '(app)/trip-ready': undefined;   // Trip data sourced from TripContext
-  '(app)/route-view': undefined;   // Trip data sourced from TripContext
+  '(app)/trip-ready': undefined; // Trip data sourced from TripContext
+  '(app)/route-view': undefined; // Trip data sourced from TripContext
 };
 
 // For Expo Router typed routes (expo-router v3 type-safe Links)
@@ -154,10 +154,7 @@ import { z } from 'zod';
 
 // Login form
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email address is required')
-    .email('Please enter a valid email address'),
+  email: z.string().min(1, 'Email address is required').email('Please enter a valid email address'),
   password: z
     .string()
     .min(1, 'Password is required')
@@ -233,7 +230,7 @@ export const MOCK_LOCATIONS: Location[] = [
     id: 'loc_005',
     name: 'International Airport',
     address: 'Airport Boulevard, Terminal 1, Gate A',
-    coordinates: { latitude: 37.6213, longitude: -122.3790 },
+    coordinates: { latitude: 37.6213, longitude: -122.379 },
     type: 'popular',
     distance: '18.4 km',
   },
@@ -254,11 +251,11 @@ export const MOCK_LOCATIONS: Location[] = [
 // Route 1: Home → City Mall (short urban route)
 export const MOCK_ROUTE_HOME_TO_MALL: Coordinate[] = [
   { latitude: 37.7749, longitude: -122.4194 },
-  { latitude: 37.7762, longitude: -122.4180 },
-  { latitude: 37.7775, longitude: -122.4160 },
-  { latitude: 37.7790, longitude: -122.4145 },
-  { latitude: 37.7808, longitude: -122.4130 },
-  { latitude: 37.7820, longitude: -122.4115 },
+  { latitude: 37.7762, longitude: -122.418 },
+  { latitude: 37.7775, longitude: -122.416 },
+  { latitude: 37.779, longitude: -122.4145 },
+  { latitude: 37.7808, longitude: -122.413 },
+  { latitude: 37.782, longitude: -122.4115 },
   { latitude: 37.7835, longitude: -122.4105 },
   { latitude: 37.7849, longitude: -122.4094 },
 ];
@@ -266,17 +263,17 @@ export const MOCK_ROUTE_HOME_TO_MALL: Coordinate[] = [
 // Route 2: Office → Airport (longer route with slight curve)
 export const MOCK_ROUTE_OFFICE_TO_AIRPORT: Coordinate[] = [
   { latitude: 37.7649, longitude: -122.4294 },
-  { latitude: 37.7580, longitude: -122.4320 },
-  { latitude: 37.7500, longitude: -122.4280 },
-  { latitude: 37.7420, longitude: -122.4200 },
-  { latitude: 37.7320, longitude: -122.4100 },
-  { latitude: 37.7200, longitude: -122.4000 },
-  { latitude: 37.7050, longitude: -122.3950 },
-  { latitude: 37.6900, longitude: -122.3890 },
-  { latitude: 37.6700, longitude: -122.3850 },
-  { latitude: 37.6500, longitude: -122.3820 },
-  { latitude: 37.6350, longitude: -122.3800 },
-  { latitude: 37.6213, longitude: -122.3790 },
+  { latitude: 37.758, longitude: -122.432 },
+  { latitude: 37.75, longitude: -122.428 },
+  { latitude: 37.742, longitude: -122.42 },
+  { latitude: 37.732, longitude: -122.41 },
+  { latitude: 37.72, longitude: -122.4 },
+  { latitude: 37.705, longitude: -122.395 },
+  { latitude: 37.69, longitude: -122.389 },
+  { latitude: 37.67, longitude: -122.385 },
+  { latitude: 37.65, longitude: -122.382 },
+  { latitude: 37.635, longitude: -122.38 },
+  { latitude: 37.6213, longitude: -122.379 },
 ];
 
 // ─────────────────────────────────────────────
@@ -286,7 +283,7 @@ export const MOCK_ROUTE_OFFICE_TO_AIRPORT: Coordinate[] = [
 export const MOCK_TRIP_HOME_TO_MALL: Trip = {
   id: 'trip_mock_001',
   from: MOCK_LOCATIONS[0], // Home
-  to: MOCK_LOCATIONS[1],   // City Mall
+  to: MOCK_LOCATIONS[1], // City Mall
   distance: '4.8 km',
   estimatedDuration: '14 min',
   travelMode: 'car',
@@ -297,7 +294,7 @@ export const MOCK_TRIP_HOME_TO_MALL: Trip = {
 export const MOCK_TRIP_OFFICE_TO_AIRPORT: Trip = {
   id: 'trip_mock_002',
   from: MOCK_LOCATIONS[2], // Office
-  to: MOCK_LOCATIONS[4],   // Airport
+  to: MOCK_LOCATIONS[4], // Airport
   distance: '18.4 km',
   estimatedDuration: '32 min',
   travelMode: 'car',
@@ -348,7 +345,7 @@ export const AUTH_CONTEXT_DEFAULT: AuthContextValue = {
   user: null,
   token: null,
   isAuthenticated: false,
-  isLoading: true,   // Starts true until AsyncStorage hydration completes
+  isLoading: true, // Starts true until AsyncStorage hydration completes
   login: async () => {},
   logout: async () => {},
 };
@@ -427,8 +424,9 @@ export const haversineDistance = (a: Coordinate, b: Coordinate): number => {
         sinLat * sinLat +
           Math.cos((a.latitude * Math.PI) / 180) *
             Math.cos((b.latitude * Math.PI) / 180) *
-            sinLon * sinLon
-      )
+            sinLon *
+            sinLon,
+      ),
     );
   return R * c;
 };
@@ -437,15 +435,17 @@ export const haversineDistance = (a: Coordinate, b: Coordinate): number => {
 export const generateMockRoute = (
   from: Coordinate,
   to: Coordinate,
-  steps: number = 12
+  steps: number = 12,
 ): Coordinate[] => {
   const points: Coordinate[] = [from];
   for (let i = 1; i < steps; i++) {
     const t = i / steps;
     const curvature = Math.sin(t * Math.PI) * 0.003;
     points.push({
-      latitude: from.latitude + (to.latitude - from.latitude) * t + (Math.random() - 0.5) * curvature,
-      longitude: from.longitude + (to.longitude - from.longitude) * t + (Math.random() - 0.5) * curvature,
+      latitude:
+        from.latitude + (to.latitude - from.latitude) * t + (Math.random() - 0.5) * curvature,
+      longitude:
+        from.longitude + (to.longitude - from.longitude) * t + (Math.random() - 0.5) * curvature,
     });
   }
   points.push(to);
@@ -456,7 +456,7 @@ export const generateMockRoute = (
 export const getMapRegion = (
   from: Coordinate,
   to: Coordinate,
-  paddingFactor: number = 1.5
+  paddingFactor: number = 1.5,
 ): { latitude: number; longitude: number; latitudeDelta: number; longitudeDelta: number } => {
   const midLat = (from.latitude + to.latitude) / 2;
   const midLng = (from.longitude + to.longitude) / 2;
@@ -468,4 +468,4 @@ export const getMapRegion = (
 
 ---
 
-*See `05-COMPONENT-GUIDE.md` for component-level usage of these types. See `07-CODING-STANDARDS.md` for import conventions.*
+_See `05-COMPONENT-GUIDE.md` for component-level usage of these types. See `07-CODING-STANDARDS.md` for import conventions._

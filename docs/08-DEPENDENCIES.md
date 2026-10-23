@@ -9,42 +9,42 @@
 
 ### Production Dependencies
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
-| `expo` | `~51.0.0` | Expo SDK — managed workflow toolchain | Industry standard for React Native development. Provides build infrastructure, OTA updates, and native module management. |
-| `react` | `18.2.0` | UI library | Peer dependency of React Native. |
-| `react-native` | `0.74.x` | Cross-platform mobile framework | Managed by Expo SDK 51 — do not upgrade independently. |
-| `expo-router` | `~3.5.0` | File-based navigation & routing | v3 provides full TypeScript support, typed routes, and seamless integration with React Navigation v6. Eliminates manual navigator configuration. |
-| `typescript` | `~5.3.0` | Static typing | TypeScript 5.3 adds features used in the codebase (const type params, etc.). |
+| Package        | Version   | Purpose                               | Justification                                                                                                                                    |
+| -------------- | --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `expo`         | `~51.0.0` | Expo SDK — managed workflow toolchain | Industry standard for React Native development. Provides build infrastructure, OTA updates, and native module management.                        |
+| `react`        | `18.2.0`  | UI library                            | Peer dependency of React Native.                                                                                                                 |
+| `react-native` | `0.74.x`  | Cross-platform mobile framework       | Managed by Expo SDK 51 — do not upgrade independently.                                                                                           |
+| `expo-router`  | `~3.5.0`  | File-based navigation & routing       | v3 provides full TypeScript support, typed routes, and seamless integration with React Navigation v6. Eliminates manual navigator configuration. |
+| `typescript`   | `~5.3.0`  | Static typing                         | TypeScript 5.3 adds features used in the codebase (const type params, etc.).                                                                     |
 
 ---
 
 ## 2. Navigation
 
-| Package | Version | Purpose | Notes |
-|---|---|---|---|
-| `@react-navigation/native` | `^6.1.x` | Navigation primitives | **Included automatically via expo-router** — do not install separately unless adding custom navigators. |
-| `@react-navigation/native-stack` | `^6.9.x` | Native stack navigator | **Included via expo-router**. Provides native iOS/Android transition animations. |
-| `react-native-safe-area-context` | `4.x` | Safe area insets | **Included via expo-router**. Required by all React Navigation layouts. |
-| `react-native-screens` | `~3.31.x` | Native screen optimization | **Included via expo-router**. Reduces memory usage by using native screen containers. |
+| Package                          | Version   | Purpose                    | Notes                                                                                                   |
+| -------------------------------- | --------- | -------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `@react-navigation/native`       | `^6.1.x`  | Navigation primitives      | **Included automatically via expo-router** — do not install separately unless adding custom navigators. |
+| `@react-navigation/native-stack` | `^6.9.x`  | Native stack navigator     | **Included via expo-router**. Provides native iOS/Android transition animations.                        |
+| `react-native-safe-area-context` | `4.x`     | Safe area insets           | **Included via expo-router**. Required by all React Navigation layouts.                                 |
+| `react-native-screens`           | `~3.31.x` | Native screen optimization | **Included via expo-router**. Reduces memory usage by using native screen containers.                   |
 
 ---
 
 ## 3. UI & Styling
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
+| Package              | Version   | Purpose                                | Justification                                                                                  |
+| -------------------- | --------- | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `@expo/vector-icons` | `^14.0.0` | Icon library (Ionicons, MaterialIcons) | Built into Expo SDK — zero additional install. Provides 30,000+ icons across 10 icon families. |
-| `expo-font` | `~12.0.0` | Custom font loading | Required to load Inter font files. Integrates with Expo's asset system. |
-| `expo-splash-screen` | `~0.27.0` | Splash screen management | Prevents white flash on startup. Used to delay hide until fonts and auth state are loaded. |
-| `expo-status-bar` | `~1.12.0` | Status bar styling | Simple API for light/dark status bar on both platforms. |
+| `expo-font`          | `~12.0.0` | Custom font loading                    | Required to load Inter font files. Integrates with Expo's asset system.                        |
+| `expo-splash-screen` | `~0.27.0` | Splash screen management               | Prevents white flash on startup. Used to delay hide until fonts and auth state are loaded.     |
+| `expo-status-bar`    | `~1.12.0` | Status bar styling                     | Simple API for light/dark status bar on both platforms.                                        |
 
 ---
 
 ## 4. Maps
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
+| Package             | Version   | Purpose                             | Justification                                                                                                                 |
+| ------------------- | --------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `react-native-maps` | `~1.14.0` | Interactive map, markers, polylines | The de-facto standard for maps in React Native. Expo SDK 51 includes a config plugin for it — no manual native configuration. |
 
 ### react-native-maps Configuration Notes
@@ -68,6 +68,7 @@
 > **For this project:** Since all data is mocked, you can use a development-only API key with billing disabled. The map will render with a "Development Key" watermark but is fully functional.
 
 **Android additional config** (`app.json`):
+
 ```json
 {
   "android": {
@@ -84,8 +85,8 @@
 
 ## 5. Location
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
+| Package         | Version   | Purpose                               | Justification                                                                                    |
+| --------------- | --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `expo-location` | `~17.0.0` | GPS coordinates, location permissions | Official Expo location module. Handles permission flows on both platforms with a consistent API. |
 
 ### expo-location Configuration
@@ -110,34 +111,34 @@
 
 ## 6. Storage
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
+| Package                                     | Version   | Purpose                      | Justification                                                                                             |
+| ------------------------------------------- | --------- | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `@react-native-async-storage/async-storage` | `~1.23.0` | Persistent key-value storage | The community standard for simple persistence in React Native. Used for auth token and user data storage. |
 
 ---
 
 ## 7. Forms & Validation
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
-| `react-hook-form` | `^7.51.0` | Performant form state management | Significantly outperforms Formik in renders and bundle size. Integrates with zod via resolver. |
-| `zod` | `^3.23.0` | Schema-based validation with TypeScript inference | Best-in-class runtime validation library. `z.infer<typeof schema>` eliminates duplicate type definitions. |
-| `@hookform/resolvers` | `^3.3.4` | Zod resolver for react-hook-form | Connects zod schemas to react-hook-form validation. |
+| Package               | Version   | Purpose                                           | Justification                                                                                             |
+| --------------------- | --------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `react-hook-form`     | `^7.51.0` | Performant form state management                  | Significantly outperforms Formik in renders and bundle size. Integrates with zod via resolver.            |
+| `zod`                 | `^3.23.0` | Schema-based validation with TypeScript inference | Best-in-class runtime validation library. `z.infer<typeof schema>` eliminates duplicate type definitions. |
+| `@hookform/resolvers` | `^3.3.4`  | Zod resolver for react-hook-form                  | Connects zod schemas to react-hook-form validation.                                                       |
 
 ---
 
 ## 8. Animations & Gestures
 
-| Package | Version | Purpose | Justification |
-|---|---|---|---|
-| `react-native-reanimated` | `~3.10.0` | UI-thread animations | **Included in Expo SDK 51.** Runs animations on the native UI thread — guarantees 60fps even under heavy JS load. Required for production-grade animations. |
-| `react-native-gesture-handler` | `~2.16.0` | Gesture recognition | **Included in Expo SDK 51.** Required by React Navigation and used for bottom sheet drag gesture. |
+| Package                        | Version   | Purpose              | Justification                                                                                                                                               |
+| ------------------------------ | --------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `react-native-reanimated`      | `~3.10.0` | UI-thread animations | **Included in Expo SDK 51.** Runs animations on the native UI thread — guarantees 60fps even under heavy JS load. Required for production-grade animations. |
+| `react-native-gesture-handler` | `~2.16.0` | Gesture recognition  | **Included in Expo SDK 51.** Required by React Navigation and used for bottom sheet drag gesture.                                                           |
 
 ### Reanimated Babel Config (Critical)
 
 ```javascript
 // babel.config.js
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -155,18 +156,18 @@ module.exports = function(api) {
 
 ## 9. Development Dependencies
 
-| Package | Version | Purpose |
-|---|---|---|
-| `@types/react` | `~18.2.0` | React TypeScript types |
-| `@types/react-native` | (via react-native) | React Native TypeScript types — included with RN |
-| `eslint` | `^8.x` | JavaScript/TypeScript linter |
-| `eslint-config-expo` | `~7.0.0` | Expo-maintained ESLint config base |
-| `@typescript-eslint/eslint-plugin` | `^7.x` | TypeScript ESLint rules |
-| `@typescript-eslint/parser` | `^7.x` | TypeScript parser for ESLint |
-| `eslint-plugin-react-hooks` | `^4.6.0` | Hooks linting rules |
-| `eslint-plugin-import` | `^2.29.0` | Import order and cycle detection |
-| `eslint-config-prettier` | `^9.x` | Disables ESLint rules that conflict with Prettier |
-| `prettier` | `^3.x` | Code formatter |
+| Package                            | Version            | Purpose                                           |
+| ---------------------------------- | ------------------ | ------------------------------------------------- |
+| `@types/react`                     | `~18.2.0`          | React TypeScript types                            |
+| `@types/react-native`              | (via react-native) | React Native TypeScript types — included with RN  |
+| `eslint`                           | `^8.x`             | JavaScript/TypeScript linter                      |
+| `eslint-config-expo`               | `~7.0.0`           | Expo-maintained ESLint config base                |
+| `@typescript-eslint/eslint-plugin` | `^7.x`             | TypeScript ESLint rules                           |
+| `@typescript-eslint/parser`        | `^7.x`             | TypeScript parser for ESLint                      |
+| `eslint-plugin-react-hooks`        | `^4.6.0`           | Hooks linting rules                               |
+| `eslint-plugin-import`             | `^2.29.0`          | Import order and cycle detection                  |
+| `eslint-config-prettier`           | `^9.x`             | Disables ESLint rules that conflict with Prettier |
+| `prettier`                         | `^3.x`             | Code formatter                                    |
 
 ---
 
@@ -267,10 +268,7 @@ module.exports = function(api) {
         "backgroundColor": "#0A0E1A"
       },
       "package": "com.codenzic.trippath",
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ],
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
       "config": {
         "googleMaps": {
           "apiKey": "YOUR_GOOGLE_MAPS_ANDROID_API_KEY"
@@ -366,23 +364,23 @@ module.exports = function(api) {
 
 ### EAS Profile Usage
 
-| Profile | Command | Output | Use When |
-|---|---|---|---|
-| `development` | `eas build --platform android --profile development` | Debug APK | Running on physical device with dev client |
-| `preview` | `eas build --platform android --profile preview` | Release APK | Sharing with reviewers, assignment submission |
-| `production` | `eas build --platform android --profile production` | AAB (App Bundle) | Play Store submission |
+| Profile       | Command                                              | Output           | Use When                                      |
+| ------------- | ---------------------------------------------------- | ---------------- | --------------------------------------------- |
+| `development` | `eas build --platform android --profile development` | Debug APK        | Running on physical device with dev client    |
+| `preview`     | `eas build --platform android --profile preview`     | Release APK      | Sharing with reviewers, assignment submission |
+| `production`  | `eas build --platform android --profile production`  | AAB (App Bundle) | Play Store submission                         |
 
 ---
 
 ## 13. Dependency Upgrade Policy
 
-| Category | Policy |
-|---|---|
-| Expo SDK | Only upgrade to a new major version when EAS Build requires it or when a critical fix is needed. Follow the [Expo upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/). |
-| React / React Native | **Never** upgrade independently of Expo SDK. The Expo SDK pins compatible RN versions. |
-| Third-party packages | Minor/patch upgrades: check changelog for breaking changes. `npm audit` weekly. |
-| Dev dependencies (ESLint, Prettier) | Can upgrade freely — no production impact. |
+| Category                            | Policy                                                                                                                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expo SDK                            | Only upgrade to a new major version when EAS Build requires it or when a critical fix is needed. Follow the [Expo upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/). |
+| React / React Native                | **Never** upgrade independently of Expo SDK. The Expo SDK pins compatible RN versions.                                                                                                            |
+| Third-party packages                | Minor/patch upgrades: check changelog for breaking changes. `npm audit` weekly.                                                                                                                   |
+| Dev dependencies (ESLint, Prettier) | Can upgrade freely — no production impact.                                                                                                                                                        |
 
 ---
 
-*See `11-BUILD-AND-DEPLOY.md` for the step-by-step build and release process.*
+_See `11-BUILD-AND-DEPLOY.md` for the step-by-step build and release process._

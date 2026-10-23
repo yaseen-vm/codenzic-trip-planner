@@ -9,14 +9,15 @@
 
 All shared components live in `components/`. They are organized by domain:
 
-| Directory | Contents |
-|---|---|
-| `components/ui/` | Primitive design system components (Button, Input, Card, Badge) |
-| `components/map/` | Map-specific rendering components |
-| `components/location/` | Location search and list components |
-| `components/trip/` | Trip summary and route info components |
+| Directory              | Contents                                                        |
+| ---------------------- | --------------------------------------------------------------- |
+| `components/ui/`       | Primitive design system components (Button, Input, Card, Badge) |
+| `components/map/`      | Map-specific rendering components                               |
+| `components/location/` | Location search and list components                             |
+| `components/trip/`     | Trip summary and route info components                          |
 
 **Component Rules:**
+
 1. Every component has an exported TypeScript `Props` interface.
 2. All style values come from `constants/` — never inline hex or pixel literals.
 3. Components are pure/presentational by default. If a component needs to call a hook, document why it's a "smart" component exception.
@@ -27,7 +28,7 @@ All shared components live in `components/`. They are organized by domain:
 ## 1. Button Component
 
 **File:** `components/ui/Button.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -49,20 +50,20 @@ interface ButtonProps {
 
 ### Variant Specifications
 
-| Variant | Background | Text Color | Border | Use Case |
-|---|---|---|---|---|
-| `primary` | `Colors.Primary` | `Colors.TextPrimary` (white) | None | Main CTAs (Sign In, View Route, Proceed) |
-| `secondary` | `Colors.SurfaceElevated` | `Colors.Primary` | `1px Colors.Primary` | Secondary actions |
-| `ghost` | `transparent` | `Colors.TextSecondary` | None | Tertiary actions (Change Locations) |
-| `danger` | `Colors.Error` | `Colors.TextPrimary` | None | Destructive actions |
+| Variant     | Background               | Text Color                   | Border               | Use Case                                 |
+| ----------- | ------------------------ | ---------------------------- | -------------------- | ---------------------------------------- |
+| `primary`   | `Colors.Primary`         | `Colors.TextPrimary` (white) | None                 | Main CTAs (Sign In, View Route, Proceed) |
+| `secondary` | `Colors.SurfaceElevated` | `Colors.Primary`             | `1px Colors.Primary` | Secondary actions                        |
+| `ghost`     | `transparent`            | `Colors.TextSecondary`       | None                 | Tertiary actions (Change Locations)      |
+| `danger`    | `Colors.Error`           | `Colors.TextPrimary`         | None                 | Destructive actions                      |
 
 ### Size Specifications
 
-| Size | Height | Padding H | Font Style | Icon Size |
-|---|---|---|---|---|
-| `sm` | 36px | 12px | `Typography.BodyMedium` | 16px |
-| `md` | 48px | 20px | `Typography.BodyLarge` | 20px |
-| `lg` | 56px | 24px | `Typography.H3` (semibold 18px) | 22px |
+| Size | Height | Padding H | Font Style                      | Icon Size |
+| ---- | ------ | --------- | ------------------------------- | --------- |
+| `sm` | 36px   | 12px      | `Typography.BodyMedium`         | 16px      |
+| `md` | 48px   | 20px      | `Typography.BodyLarge`          | 20px      |
+| `lg` | 56px   | 24px      | `Typography.H3` (semibold 18px) | 22px      |
 
 ### Behavior
 
@@ -127,7 +128,7 @@ const handlePressOut = () => {
 ## 2. Input Component
 
 **File:** `components/ui/Input.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -158,12 +159,12 @@ interface InputProps {
 
 ### Visual States
 
-| State | Border | Border Width | Background | Label Color |
-|---|---|---|---|---|
-| Default | `Colors.Border` | 1px | `Colors.SurfaceElevated` | `Colors.TextSecondary` |
-| Focused | `Colors.BorderFocused` (Primary) | 2px | `Colors.SurfaceElevated` | `Colors.Primary` |
-| Error | `Colors.BorderError` (Error) | 2px | `Colors.SurfaceElevated` | `Colors.Error` |
-| Disabled | `Colors.Border` | 1px | `Colors.Surface` (darker) | `Colors.TextMuted` |
+| State    | Border                           | Border Width | Background                | Label Color            |
+| -------- | -------------------------------- | ------------ | ------------------------- | ---------------------- |
+| Default  | `Colors.Border`                  | 1px          | `Colors.SurfaceElevated`  | `Colors.TextSecondary` |
+| Focused  | `Colors.BorderFocused` (Primary) | 2px          | `Colors.SurfaceElevated`  | `Colors.Primary`       |
+| Error    | `Colors.BorderError` (Error)     | 2px          | `Colors.SurfaceElevated`  | `Colors.Error`         |
+| Disabled | `Colors.Border`                  | 1px          | `Colors.Surface` (darker) | `Colors.TextMuted`     |
 
 ### Component Structure
 
@@ -198,19 +199,24 @@ const handleBlur = () => {
 
 const borderColor = borderAnim.interpolate({
   inputRange: [0, 1],
-  outputRange: [error ? Colors.BorderError : Colors.Border, error ? Colors.BorderError : Colors.BorderFocused],
+  outputRange: [
+    error ? Colors.BorderError : Colors.Border,
+    error ? Colors.BorderError : Colors.BorderFocused,
+  ],
 });
 ```
 
 ### Error Display
 
 ```tsx
-{error && (
-  <View style={styles.errorContainer}>
-    <Ionicons name="alert-circle" size={12} color={Colors.Error} />
-    <Text style={styles.errorText}>{error}</Text>
-  </View>
-)}
+{
+  error && (
+    <View style={styles.errorContainer}>
+      <Ionicons name="alert-circle" size={12} color={Colors.Error} />
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  );
+}
 ```
 
 ### Usage Examples
@@ -260,7 +266,7 @@ const borderColor = borderAnim.interpolate({
 ## 3. Card Component
 
 **File:** `components/ui/Card.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -268,20 +274,20 @@ const borderColor = borderAnim.interpolate({
 interface CardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  elevated?: boolean;        // If true, uses SurfaceElevated bg + medium shadow
-  onPress?: () => void;      // If provided, renders as TouchableOpacity
-  activeOpacity?: number;    // Default: 0.85 (for touchable)
+  elevated?: boolean; // If true, uses SurfaceElevated bg + medium shadow
+  onPress?: () => void; // If provided, renders as TouchableOpacity
+  activeOpacity?: number; // Default: 0.85 (for touchable)
   testID?: string;
 }
 ```
 
 ### Variants
 
-| Prop | Background | Shadow Level |
-|---|---|---|
-| `elevated={false}` (default) | `Colors.Surface` | None |
-| `elevated={true}` | `Colors.SurfaceElevated` | `Shadows.low` |
-| `onPress` provided | Any of above + ripple/opacity press feedback | Appropriate to variant |
+| Prop                         | Background                                   | Shadow Level           |
+| ---------------------------- | -------------------------------------------- | ---------------------- |
+| `elevated={false}` (default) | `Colors.Surface`                             | None                   |
+| `elevated={true}`            | `Colors.SurfaceElevated`                     | `Shadows.low`          |
+| `onPress` provided           | Any of above + ripple/opacity press feedback | Appropriate to variant |
 
 ### Implementation Notes
 
@@ -308,7 +314,7 @@ interface CardProps {
 ## 4. Badge Component
 
 **File:** `components/ui/Badge.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -324,13 +330,13 @@ interface BadgeProps {
 
 ### Variant Colors
 
-| Variant | Background | Text Color |
-|---|---|---|
-| `default` | `Colors.SurfaceElevated` | `Colors.TextSecondary` |
-| `primary` | `Colors.Primary + '22'` (10% opacity) | `Colors.Primary` |
-| `success` | `Colors.Success + '22'` | `Colors.Success` |
-| `warning` | `Colors.Warning + '22'` | `Colors.Warning` |
-| `error` | `Colors.Error + '22'` | `Colors.Error` |
+| Variant   | Background                            | Text Color             |
+| --------- | ------------------------------------- | ---------------------- |
+| `default` | `Colors.SurfaceElevated`              | `Colors.TextSecondary` |
+| `primary` | `Colors.Primary + '22'` (10% opacity) | `Colors.Primary`       |
+| `success` | `Colors.Success + '22'`               | `Colors.Success`       |
+| `warning` | `Colors.Warning + '22'`               | `Colors.Warning`       |
+| `error`   | `Colors.Error + '22'`                 | `Colors.Error`         |
 
 Always uses `borderRadius: Radius.full` (pill shape).
 
@@ -346,7 +352,7 @@ Always uses `borderRadius: Radius.full` (pill shape).
 ## 5. LocationItem Component
 
 **File:** `components/location/LocationItem.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -384,16 +390,17 @@ interface LocationItemProps {
 
 ### Icon by Location Type
 
-| `location.type` | Icon Name | Icon Color |
-|---|---|---|
-| `recent` | `time-outline` | `Colors.TextSecondary` |
-| `popular` | `star-outline` | `Colors.Warning` |
-| `current` | `navigate-circle` | `Colors.Primary` |
-| `custom` | `location-outline` | `Colors.Primary` |
+| `location.type` | Icon Name          | Icon Color             |
+| --------------- | ------------------ | ---------------------- |
+| `recent`        | `time-outline`     | `Colors.TextSecondary` |
+| `popular`       | `star-outline`     | `Colors.Warning`       |
+| `current`       | `navigate-circle`  | `Colors.Primary`       |
+| `custom`        | `location-outline` | `Colors.Primary`       |
 
 ### Selected State
 
 When `isSelected={true}`:
+
 - Background: `Colors.Primary + '15'` (8% opacity tint)
 - Left border: 3px `Colors.Primary` (visual selection indicator)
 
@@ -406,7 +413,7 @@ When `isSelected={true}`:
 ## 6. LocationSearchBar Component
 
 **File:** `components/location/LocationSearchBar.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -419,13 +426,14 @@ interface LocationSearchBarProps {
   onBlur?: () => void;
   onClear?: () => void;
   isFocused?: boolean;
-  dotColor?: string;           // Color of the leading dot (green for from, red for to)
+  dotColor?: string; // Color of the leading dot (green for from, red for to)
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 ```
 
 This is a specialized input variant for location entry — not the generic `Input` component. It has:
+
 - A colored dot indicator (not a standard icon) to match the From/To scheme
 - A clear (×) button that appears only when `value.length > 0`
 - Custom focus state with `isFocused` prop (controlled from parent — parent manages which field is "active")
@@ -435,7 +443,7 @@ This is a specialized input variant for location entry — not the generic `Inpu
 ## 7. TripSummaryCard Component
 
 **File:** `components/trip/TripSummaryCard.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -446,7 +454,7 @@ interface TripSummaryCardProps {
   distance?: string;
   duration?: string;
   travelMode?: 'car' | 'walk' | 'transit';
-  isCalculating?: boolean;   // Shows shimmer on meta row when true
+  isCalculating?: boolean; // Shows shimmer on meta row when true
   style?: StyleProp<ViewStyle>;
 }
 ```
@@ -474,6 +482,7 @@ interface TripSummaryCardProps {
 ### Connector Line
 
 The vertical line between From and To uses a `View` with:
+
 ```typescript
 {
   width: 2,
@@ -492,9 +501,9 @@ Each MetaChip is a small `Card`-like element:
 
 ```typescript
 interface MetaChipProps {
-  icon: string;         // Ionicons name
-  value: string;        // Display text
-  isLoading?: boolean;  // Shows shimmer if true
+  icon: string; // Ionicons name
+  value: string; // Display text
+  isLoading?: boolean; // Shows shimmer if true
 }
 ```
 
@@ -504,6 +513,7 @@ interface MetaChipProps {
 │  [value]     │
 └──────────────┘
 ```
+
 Background: `Colors.SurfaceElevated`, radius: `Radius.md`, padding: `Spacing.sm`.
 
 ---
@@ -511,7 +521,7 @@ Background: `Colors.SurfaceElevated`, radius: `Radius.md`, padding: `Spacing.sm`
 ## 8. RouteInfoPanel Component
 
 **File:** `components/trip/RouteInfoPanel.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -523,6 +533,7 @@ interface RouteInfoPanelProps {
 ```
 
 Used inside the Route View bottom sheet. Shows:
+
 - Compact From → To location row (names only, no full addresses)
 - Distance, ETA, and mode meta row
 - Passes through to button rendering in the parent screen
@@ -539,7 +550,7 @@ Used inside the Route View bottom sheet. Shows:
 ## 9. MapView Component (Wrapper)
 
 **File:** `components/map/MapView.tsx`  
-**Type:** Smart Component (owns map ref and ready state)  
+**Type:** Smart Component (owns map ref and ready state)
 
 ### Props Interface
 
@@ -554,6 +565,7 @@ interface TripMapViewProps {
 ```
 
 This wrapper abstracts away the `react-native-maps` API and owns:
+
 - The `MapView` ref
 - `fitToCoordinates` call once `onMapReady` fires
 - Dark map style JSON application
@@ -573,7 +585,7 @@ This wrapper abstracts away the `react-native-maps` API and owns:
     });
     onMapReady?.();
   }}
-  provider={PROVIDER_GOOGLE}    // Use Google Maps for consistent rendering
+  provider={PROVIDER_GOOGLE} // Use Google Maps for consistent rendering
 >
   <LocationMarker coordinate={from} type="origin" />
   <LocationMarker coordinate={to} type="destination" />
@@ -586,19 +598,20 @@ This wrapper abstracts away the `react-native-maps` API and owns:
 ## 10. RoutePolyline Component
 
 **File:** `components/map/RoutePolyline.tsx`  
-**Type:** Pure Presentational  
+**Type:** Pure Presentational
 
 ### Props Interface
 
 ```typescript
 interface RoutePolylineProps {
   coordinates: Coordinate[];
-  color?: string;          // Default: Colors.Primary (#4F8EF7)
-  strokeWidth?: number;    // Default: 4
+  color?: string; // Default: Colors.Primary (#4F8EF7)
+  strokeWidth?: number; // Default: 4
 }
 ```
 
 Renders `react-native-maps` `Polyline` with:
+
 - `lineDashPattern={[]}` (solid line — dashed is not performant)
 - `strokeColor={color ?? Colors.MapRouteColor}`
 - `strokeWidth={strokeWidth ?? 4}`
@@ -609,8 +622,8 @@ Renders `react-native-maps` `Polyline` with:
 
 ## 11. ScreenHeader Component
 
-**File:** `components/ui/ScreenHeader.tsx` *(utility, not listed in original tree — add as needed)*  
-**Type:** Pure Presentational  
+**File:** `components/ui/ScreenHeader.tsx` _(utility, not listed in original tree — add as needed)_  
+**Type:** Pure Presentational
 
 ### Props Interface
 
@@ -618,7 +631,7 @@ Renders `react-native-maps` `Polyline` with:
 interface ScreenHeaderProps {
   title: string;
   showBack?: boolean;
-  onBack?: () => void;           // Defaults to router.back()
+  onBack?: () => void; // Defaults to router.back()
   rightAction?: React.ReactNode; // Optional right-side element
   style?: StyleProp<ViewStyle>;
 }
@@ -643,4 +656,4 @@ Before marking any component as complete, verify:
 
 ---
 
-*See `06-DATA-MODELS.md` for TypeScript interface definitions and `07-CODING-STANDARDS.md` for code style rules.*
+_See `06-DATA-MODELS.md` for TypeScript interface definitions and `07-CODING-STANDARDS.md` for code style rules._

@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "TripPath",
+    "slug": "trippath",
+    "scheme": "trippath",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "android": {
+      "package": "com.codenzic.trippath"
+    },
+    "ios": {
+      "bundleIdentifier": "com.codenzic.trippath",
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": ""
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "58381fb7-cfea-475a-b3c7-68dc3e2593bc"
+      }
+    }
+  }
+}
