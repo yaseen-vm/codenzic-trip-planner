@@ -22,7 +22,7 @@ Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
 | Application state                      | ⚠️     | Local `useState` per screen, selection passed via router params. No global store (not needed for this flow)                                               |
 | Basic form validation                  | ✅     | Login (email format, password length) and locations (both required, must differ)                                                                          |
 | Mock/static data                       | ✅     | Saved places are static; routes and places use Google APIs when keys are configured                                                                       |
-| Clean code                             | ✅     | `npm run check` (type-check, ESLint, Prettier) and a CI workflow                                                                                          |
+| Clean code                             | ✅     | `npm run check` (unit tests, type-check, ESLint, Prettier) and a CI workflow                                                                                          |
 
 ### Deliverables
 
@@ -96,7 +96,10 @@ The APK is signed with the default debug keystore, which is fine for sideloading
 
 ## Quality checks
 
+The unit suite uses Node.js's built-in test runner, so no separate test framework is required. It covers coordinate validation, encoded route polyline decoding, safe web-map label serialization, and stale autocomplete request guards.
+
 ```bash
+npm test
 npm run type-check
 npm run lint
 npm run format:check
