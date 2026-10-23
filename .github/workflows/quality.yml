@@ -41,9 +41,9 @@ jobs:
       - name: Expo dependency compatibility
         if: steps.scaffold.outputs.ready == 'true'
         run: npx expo install --check
-      - name: Unit tests
+      - name: Tests with coverage
         if: steps.scaffold.outputs.ready == 'true'
-        run: npm test
+        run: npm run test:coverage
       - name: Type-check
         if: steps.scaffold.outputs.ready == 'true'
         run: npm run type-check

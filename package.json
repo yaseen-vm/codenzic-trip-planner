@@ -10,12 +10,11 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,mts,json,md,yml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,mts,json,md,yml}\"",
-    "test": "npm run test:unit && npm run test:components",
-    "check": "npm test && npm run type-check && npm run lint && npm run format:check",
-    "test:unit": "node --test tests/*.test.mjs",
-    "test:components": "jest"
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yml}\"",
+    "test": "jest",
+    "check": "npm run test:coverage && npm run type-check && npm run lint && npm run format:check",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo-google-fonts/nunito-sans": "0.4.2",

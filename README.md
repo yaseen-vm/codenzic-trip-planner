@@ -6,18 +6,18 @@ A React Native and Expo trip-planning app for Android and iOS, built for the Cod
 
 Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
 
-| Requirement                                                                   | Status | What is implemented                                                                                                                                                                                                                                                                                                                                     | Where                                                                       |
-| ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **1. Login** – email/password, validation, login, create account              | ✅     | Email and password fields, regex email check, minimum 6-character password, inline errors, show/hide password. "Forgot password?" and "Create an account" open in-app modals (reset email form; name/email/password/confirm form with validation and a success state). Authentication itself is a demo: no backend.                                     | `app/login.tsx`, `components/AuthModals.tsx`                                |
-| **2. Set Locations** – start/destination, current vs manual, suggestions list | ✅     | Pickup and drop-off fields, swap and clear, saved/recent places (mock data), live Google Places (New) autocomplete when a key is set. **Use current** requests location permission via `expo-location` and reverse-geocodes the fix. **Pick on map** opens a full-screen map with a centre pin. "Next" is disabled until both are chosen and different. | `app/locations.tsx`, `components/MapPicker.tsx`, `constants/savedPlaces.ts` |
-| **3. Trip Ready** – selected trip info, proceed action                        | ✅     | The Figma "Trip ready" frame is the Set Locations screen with the drop-off field active, so there is no separate screen. The selected pickup and drop-off are confirmed by the filled fields, and "Next" proceeds to Route View, where both are shown again in the sheet.                                                                               | `app/locations.tsx`, `app/route.tsx`                                        |
-| **4. Route View** – map, ETA, route info, start navigation                    | ✅     | Google Map with start/end markers and road polyline, duration, distance, arrival time, drive/ride/walk modes, traffic warning, turn-by-turn list, satellite toggle, "Start navigation" hands off to Google Maps. Web falls back to a placeholder map.                                                                                                   | `app/route.tsx`, `components/RouteMap.tsx`, `components/RouteMap.web.tsx`   |
+| Requirement                                                                   | Status | What is implemented                                                                                                                                                                                                                                                                                                                                     | Where                                                          |
+| ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **1. Login** – email/password, validation, login, create account              | ✅     | Email and password fields, regex email check, minimum 6-character password, inline errors, show/hide password. "Forgot password?" and "Create an account" open in-app modals (reset email form; name/email/password/confirm form with validation and a success state). Authentication itself is a demo: no backend.                                     | `src/features/auth/`                                           |
+| **2. Set Locations** – start/destination, current vs manual, suggestions list | ✅     | Pickup and drop-off fields, swap and clear, saved/recent places (mock data), live Google Places (New) autocomplete when a key is set. **Use current** requests location permission via `expo-location` and reverse-geocodes the fix. **Pick on map** opens a full-screen map with a centre pin. "Next" is disabled until both are chosen and different. | `src/features/locations/`, `src/components/map/MapPicker.tsx`  |
+| **3. Trip Ready** – selected trip info, proceed action                        | ✅     | The Figma "Trip ready" frame is the Set Locations screen with the drop-off field active, so there is no separate screen. The selected pickup and drop-off are confirmed by the filled fields, and "Next" proceeds to Route View, where both are shown again in the sheet.                                                                               | `src/features/locations/`, `src/features/route/`               |
+| **4. Route View** – map, ETA, route info, start navigation                    | ✅     | Google Map with start/end markers and road polyline, duration, distance, arrival time, drive/ride/walk modes, traffic warning, turn-by-turn list, satellite toggle, "Start navigation" hands off to Google Maps. Web falls back to a placeholder map.                                                                                                   | `src/features/route/`, `src/components/map/RouteMap(.web).tsx` |
 
 | Technical expectation                  | Status | Notes                                                                                                                                                     |
 | -------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | React Native + Expo                    | ✅     | Expo SDK 58, React Native 0.88, TypeScript                                                                                                                |
 | Proper navigation                      | ✅     | Expo Router stack: `/` → `/login` → `/locations` → `/route`; route params carry the selected places                                                       |
-| Responsive UI matching Figma           | ✅     | Shared tokens in `constants/theme.ts`, Nunito Sans, safe-area handling. Matched by hand in commit `02532c5`; no automated visual comparison               |
+| Responsive UI matching Figma           | ✅     | Shared tokens in `src/constants/theme.ts`, Nunito Sans, safe-area handling. Matched by hand in commit `02532c5`; no automated visual comparison           |
 | Component-based, reusable architecture | ⚠️     | Screens are large single files with local `StyleSheet`s; only `RouteMap` is extracted. Extracting inputs, buttons and list rows is the main refactor left |
 | Application state                      | ⚠️     | Local `useState` per screen, selection passed via router params. No global store (not needed for this flow)                                               |
 | Basic form validation                  | ✅     | Login (email format, password length) and locations (both required, must differ)                                                                          |
@@ -36,8 +36,7 @@ Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
 
 1. Add the three Google API keys as repository secrets, then confirm the first CI APK build succeeds and install it on a device.
 2. Real authentication behind the login and create-account modals.
-3. Extract the location list row from `app/locations.tsx`.
-4. Native checks of Use current, Pick on map and the modals on a device/emulator have not been run. `expo-location` was added to the app config, so rebuild the dev client (`npx expo run:android`).
+3. Native checks of Use current, Pick on map and the modals on a device/emulator have not been run. `expo-location` was added to the app config, so rebuild the dev client (`npx expo run:android`).
 
 ## Tech stack
 
@@ -100,19 +99,23 @@ Login, password reset and account creation are **demos**: there is no backend, n
 
 ## Quality checks
 
-`npm test` runs two suites:
+`npm test` runs the whole suite with Jest and React Native Testing Library (`npm run test:coverage` adds a coverage report and enforces the thresholds in `jest.config.js`: 90% lines, statements and functions, 80% branches). Tests live in `tests/`, mirroring `src/`:
 
-- **Unit** (`npm run test:unit`, Node's built-in runner): coordinate validation, polyline decoding, auth validation, Places response parsing and request guards, and safe web-map label serialization.
-- **Component / route-flow** (`npm run test:components`, Jest + React Native Testing Library): login and demo-auth modals, route screen with missing/invalid/zero coordinates and API failures, location autocomplete races (out-of-order, cleared field, HTTP error, rejected fetch), and web map popup escaping.
+- **`tests/utils`**: coordinate validation, polyline decoding, auth validation, formatting, map regions, safe web-map label serialization.
+- **`tests/services`**: the Places and Routes clients (request shape, response validation, HTTP and network failures, disabled-API detection, abort signals) and reverse geocoding.
+- **`tests/hooks`**: `useRoute`, `usePlaceSuggestions` and `useCurrentLocation`, including debouncing, aborting superseded requests, ignoring stale responses, and permission failures.
+- **`tests/features`**: login and the demo-auth modals, the location form reducer and screen (autocomplete races, saved places, swap/clear, current location, map picking, validation), and the route screen (invalid coordinates, travel modes, traffic, failures, navigation hand-off).
+- **`tests/components`**: shared components and the native and web map components (native maps are mocked).
 
-Native-only behaviour (Expo Location permission prompts, the native map view, Google Maps hand-off, device keyboard handling) is not covered by these tests and needs a manual smoke test on a device or emulator before release.
+Native-only behaviour (Expo Location permission prompts, the real native map view, Google Maps hand-off, device keyboard handling) is not covered by these tests and needs a manual smoke test on a device or emulator before release.
 
 ```bash
 npm test
+npm run test:coverage
 npm run type-check
 npm run lint
 npm run format:check
-npm run check
+npm run check   # everything above
 ```
 
 Run these checks locally before merging. A native iOS/Android smoke test is also required.
@@ -120,22 +123,24 @@ Run these checks locally before merging. A native iOS/Android smoke test is also
 ## Project structure
 
 ```text
-app/
-  _layout.tsx       fonts, safe area, stack navigator
-  index.tsx         redirects to /login
-  login.tsx
-  locations.tsx
-  route.tsx
-components/
-  AppModal, AuthModals, TextField, PrimaryButton, TripPlaces
-  MapPicker.tsx     map pin picker (+ .web fallback)
-  RouteMap.tsx      native Google Map (+ .web fallback)
-  mapConfig.ts      native map provider and style
-constants/
-  theme.ts          colors, fonts, radii
-  savedPlaces.ts    mock saved places
+src/
+  app/              Expo Router routes: thin re-exports of the screens in features/
+  features/
+    auth/           LoginScreen, demo AuthModals
+    locations/      LocationsScreen, TripFields, SuggestionList, trip form reducer, row building
+    route/          RouteScreen, RouteDetails, summary / mode / step components, navigation hand-off
+  hooks/            useRoute, usePlaceSuggestions, useCurrentLocation
+  services/         placesApi, routesApi, geocoding (the only code that talks to Google or the OS)
+  components/       shared UI (PrimaryButton, TextField, AppModal, NoticeBanner, ...)
+    map/            native and .web map components, markers, Leaflet page builder
+  constants/        config (URLs, keys, timings, limits), strings (all UI copy), theme, map style
+  types/            shared domain types (Coordinate, SelectedPlace, RouteResult, ...)
+  utils/            pure helpers (formatting, coordinates, polyline, validation)
+tests/              mirrors src/, plus mocks/ and helpers
 docs/               original plan (01-11) and setup notes
 ```
+
+Conventions: no literals in components (strings, colors, spacing, URLs and limits come from `src/constants`); components render, hooks own async state, services own network and OS calls; utils stay pure.
 
 ## License
 
