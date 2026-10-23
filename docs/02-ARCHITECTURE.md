@@ -91,10 +91,10 @@ codenzic-trip-planner/
 
 Expo Router uses **route groups** (parenthesized folder names) that do not contribute to the URL path but allow separate layout wrappers.
 
-| Group | Path Prefix | Layout | Purpose |
-|---|---|---|---|
-| `(auth)` | `/(auth)/` | Stack (no header) | Unauthenticated screens |
-| `(app)` | `/(app)/` | Stack | Authenticated screens |
+| Group    | Path Prefix | Layout            | Purpose                 |
+| -------- | ----------- | ----------------- | ----------------------- |
+| `(auth)` | `/(auth)/`  | Stack (no header) | Unauthenticated screens |
+| `(app)`  | `/(app)/`   | Stack             | Authenticated screens   |
 
 ### Navigation Flowchart
 
@@ -126,13 +126,13 @@ flowchart TD
 
 ### Screen Transition Map
 
-| Transition | Animation | Platform Notes |
-|---|---|---|
-| Login → Set Locations | Fade | Feels like session start, not a push |
-| Set Locations → Trip Ready | Slide from right | Standard forward navigation |
-| Trip Ready → Route View | Slide from bottom (modal-style) | Map feels like it's coming up |
-| Route View → Trip Ready (back) | Slide down | Reverses modal entry |
-| Any screen → Login (auth guard) | Fade | Avoids jarring redirect |
+| Transition                      | Animation                       | Platform Notes                       |
+| ------------------------------- | ------------------------------- | ------------------------------------ |
+| Login → Set Locations           | Fade                            | Feels like session start, not a push |
+| Set Locations → Trip Ready      | Slide from right                | Standard forward navigation          |
+| Trip Ready → Route View         | Slide from bottom (modal-style) | Map feels like it's coming up        |
+| Route View → Trip Ready (back)  | Slide down                      | Reverses modal entry                 |
+| Any screen → Login (auth guard) | Fade                            | Avoids jarring redirect              |
 
 ---
 
@@ -208,16 +208,16 @@ flowchart LR
 
 ## 4. File Naming Conventions
 
-| Entity Type | Convention | Example |
-|---|---|---|
-| Screen files (Expo Router) | `kebab-case.tsx` | `set-locations.tsx` |
-| Layout files | `_layout.tsx` | `_layout.tsx` |
-| Components (PascalCase) | `PascalCase.tsx` | `LocationItem.tsx` |
-| Hooks | `camelCase.ts` (prefix `use`) | `useLocation.ts` |
-| Utilities | `camelCase.ts` | `helpers.ts` |
-| Context | `PascalCase.tsx` (suffix `Context`) | `AuthContext.tsx` |
-| Types | `index.ts` | `types/index.ts` |
-| Constants | `camelCase.ts` | `colors.ts` |
+| Entity Type                | Convention                          | Example             |
+| -------------------------- | ----------------------------------- | ------------------- |
+| Screen files (Expo Router) | `kebab-case.tsx`                    | `set-locations.tsx` |
+| Layout files               | `_layout.tsx`                       | `_layout.tsx`       |
+| Components (PascalCase)    | `PascalCase.tsx`                    | `LocationItem.tsx`  |
+| Hooks                      | `camelCase.ts` (prefix `use`)       | `useLocation.ts`    |
+| Utilities                  | `camelCase.ts`                      | `helpers.ts`        |
+| Context                    | `PascalCase.tsx` (suffix `Context`) | `AuthContext.tsx`   |
+| Types                      | `index.ts`                          | `types/index.ts`    |
+| Constants                  | `camelCase.ts`                      | `colors.ts`         |
 
 ---
 
@@ -278,19 +278,19 @@ app/_layout.tsx pseudo-logic:
 
 The following rules enforce clear module separation and prevent circular dependencies:
 
-| Rule | Details |
-|---|---|
-| Screens → Components | ✅ Screens import from `components/` |
-| Screens → Hooks | ✅ Screens import from `hooks/` |
-| Components → Constants | ✅ Components import from `constants/` |
-| Components → Types | ✅ Components import from `types/` |
-| Hooks → Context | ✅ Hooks consume `context/` |
-| Hooks → Utils | ✅ Hooks call `utils/` functions |
-| Context → Utils | ✅ Context may call `utils/` |
-| Context → Screens | ❌ FORBIDDEN — context never imports screens |
-| Components → Hooks | ⚠️ Allowed only for `useAuth` and `useTrip` in smart components |
-| Components → Context | ❌ FORBIDDEN — always go through hooks |
-| Utils → anything internal | ❌ FORBIDDEN — utils are pure, import only from `types/` |
+| Rule                      | Details                                                         |
+| ------------------------- | --------------------------------------------------------------- |
+| Screens → Components      | ✅ Screens import from `components/`                            |
+| Screens → Hooks           | ✅ Screens import from `hooks/`                                 |
+| Components → Constants    | ✅ Components import from `constants/`                          |
+| Components → Types        | ✅ Components import from `types/`                              |
+| Hooks → Context           | ✅ Hooks consume `context/`                                     |
+| Hooks → Utils             | ✅ Hooks call `utils/` functions                                |
+| Context → Utils           | ✅ Context may call `utils/`                                    |
+| Context → Screens         | ❌ FORBIDDEN — context never imports screens                    |
+| Components → Hooks        | ⚠️ Allowed only for `useAuth` and `useTrip` in smart components |
+| Components → Context      | ❌ FORBIDDEN — always go through hooks                          |
+| Utils → anything internal | ❌ FORBIDDEN — utils are pure, import only from `types/`        |
 
 ---
 
@@ -324,4 +324,4 @@ Path aliases (`@components/`, `@hooks/`, etc.) are used throughout the codebase 
 
 ---
 
-*See `03-DESIGN-SYSTEM.md` for visual design tokens, `04-SCREEN-SPECS.md` for screen-level detail.*
+_See `03-DESIGN-SYSTEM.md` for visual design tokens, `04-SCREEN-SPECS.md` for screen-level detail._

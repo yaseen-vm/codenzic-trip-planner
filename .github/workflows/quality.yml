@@ -1,0 +1,49 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: TypeScript and formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+      - name: Verify project scaffold exists
+        id: scaffold
+        shell: bash
+        run: |
+          if [[ -f package.json && -f package-lock.json ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Expo application scaffold or npm lockfile not present yet; code checks are deferred." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Install dependencies
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npm ci
+      - name: Expo dependency compatibility
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npx expo install --check
+      - name: Type-check
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npm run type-check
+      - name: Lint
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npm run lint
+      - name: Check formatting
+        if: steps.scaffold.outputs.ready == 'true'
+        run: npm run format:check

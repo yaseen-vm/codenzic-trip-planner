@@ -20,22 +20,24 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 ## 2. Screen 1: Login Screen — QA Checklist
 
 ### Functional
+
 - [ ] Screen renders without crashing on first open
 - [ ] Email input accepts and displays typed text
 - [ ] Password input masks characters with `•` by default
 - [ ] Eye icon toggles password visibility — text becomes readable
 - [ ] Eye icon toggles back — text is masked again
 - [ ] Tapping "Sign In" with empty fields shows validation errors (not crashes)
-- [ ] Email field shows error: *"Email address is required"* when empty + submitted
-- [ ] Email field shows error: *"Please enter a valid email address"* for `notanemail`
-- [ ] Password field shows error: *"Password is required"* when empty + submitted
-- [ ] Password field shows error: *"Password must be at least 6 characters"* for `abc`
+- [ ] Email field shows error: _"Email address is required"_ when empty + submitted
+- [ ] Email field shows error: _"Please enter a valid email address"_ for `notanemail`
+- [ ] Password field shows error: _"Password is required"_ when empty + submitted
+- [ ] Password field shows error: _"Password must be at least 6 characters"_ for `abc`
 - [ ] Valid email + 6+ char password → loading spinner appears
 - [ ] After mock delay (~1.2s), navigation moves to Set Locations screen
 - [ ] Errors clear when user corrects the field and re-submits
 - [ ] "Create Account" tap shows appropriate message (Alert or Toast)
 
 ### Visual
+
 - [ ] Background is `#0A0E1A` (deep navy) — no white/light flash
 - [ ] Logo and tagline are centered
 - [ ] Form inputs have correct border color (`#2D3748` default, `#4F8EF7` focused)
@@ -45,6 +47,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Button press has subtle scale animation (shrinks slightly)
 
 ### Platform & Edge Cases
+
 - [ ] **iOS:** Keyboard appears when tapping email input — form scrolls up, Sign In button still visible
 - [ ] **Android:** Keyboard appears — layout adjusts correctly (no content hidden behind keyboard)
 - [ ] Very long email address doesn't overflow — input scrolls horizontally
@@ -58,6 +61,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 ## 3. Screen 2: Set Locations Screen — QA Checklist
 
 ### Functional
+
 - [ ] Screen renders with both inputs empty
 - [ ] Tapping "From" input field focuses it (keyboard appears, `activeInput = 'from'`)
 - [ ] Tapping "To" input field focuses it (`activeInput = 'to'`)
@@ -78,6 +82,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Tapping "Proceed" with both fields → navigates to Trip Ready screen
 
 ### Visual
+
 - [ ] From input has green dot indicator (`#4CAF50`)
 - [ ] To input has red dot indicator (`#FF6B6B`)
 - [ ] Swap button visible between the two inputs
@@ -89,6 +94,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Location item tap has press feedback (opacity change)
 
 ### Platform & Edge Cases
+
 - [ ] Very long location name truncates with `...` (ellipsis) — no overflow
 - [ ] Very long address truncates to 1 line — no overflow
 - [ ] Location services disabled on device → informative Alert, no crash
@@ -101,6 +107,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 ## 4. Screen 3: Trip Ready Screen — QA Checklist
 
 ### Functional
+
 - [ ] Screen renders with correct From and To location names
 - [ ] Screen renders correct addresses for both locations
 - [ ] Shimmer loading animation plays on MetaChips while calculating
@@ -115,6 +122,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Back button (arrow icon, top-left) navigates back to Set Locations
 
 ### Visual
+
 - [ ] Background is `#0A0E1A` (matches rest of app)
 - [ ] Illustration/icon area renders in upper portion of screen
 - [ ] TripSummaryCard slides up with fade animation on mount
@@ -125,6 +133,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] "Change Locations" is ghost button (transparent, muted text)
 
 ### Platform & Edge Cases
+
 - [ ] Very long location name in TripSummaryCard — wraps to 2 lines (no overflow)
 - [ ] Duration > 60 minutes formats correctly as `1h 15min` (not `75 min`)
 - [ ] Screen navigated to without TripContext data (edge case guard) — redirected to set-locations
@@ -135,6 +144,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 ## 5. Screen 4: Route View Screen — QA Checklist
 
 ### Functional
+
 - [ ] Screen renders without crashing
 - [ ] Map loads and displays (not a blank gray screen)
 - [ ] Dark map style is applied (dark background, not default Google Maps light)
@@ -153,6 +163,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Bottom sheet is draggable — drag down collapses to 30%
 
 ### Visual
+
 - [ ] Map fills the entire screen (no margins)
 - [ ] FloatingHeader has semi-transparent `Surface` background (glassmorphism)
 - [ ] Bottom sheet has rounded top corners (`borderTopRadius: 24px`)
@@ -162,6 +173,7 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 - [ ] Marker pins are colored correctly (green origin, red destination)
 
 ### Platform & Edge Cases
+
 - [ ] Google Maps not installed (Android) → "Start Navigation" falls back to browser URL
 - [ ] Map renders on device without Google Play Services (unlikely, but handle gracefully)
 - [ ] Very short route (same neighborhood) — map zooms in appropriately
@@ -174,16 +186,16 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 
 ## 6. End-to-End Flow Tests
 
-| Test Case | Steps | Expected Result |
-|---|---|---|
-| **Happy Path** | Open app → Login with valid credentials → Select From + To locations → Proceed → View Route → Start Navigation | Smooth navigation through all 4 screens, no errors |
-| **Validation path** | Open app → Login → Submit empty form | Both error messages appear, no navigation |
-| **Location swap** | Set Locations → Fill both → Swap | From and To values exchange correctly |
-| **Current location** | Set Locations → Use Current Location | "From" fills with "Current Location", GPS coordinates in context |
-| **Back navigation** | Route View → Back → Trip Ready → Back → Set Locations | Each back lands on correct screen |
-| **Change locations** | Trip Ready → Change Locations → Modify To → Proceed | New trip data appears in Trip Ready |
-| **Auth persistence** | Login → Background app for 5 min → Resume | Still logged in, Set Locations shows |
-| **Logout and re-login** | (If logout implemented) Logout → Login again | Clean state, can plan new trip |
+| Test Case               | Steps                                                                                                          | Expected Result                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Happy Path**          | Open app → Login with valid credentials → Select From + To locations → Proceed → View Route → Start Navigation | Smooth navigation through all 4 screens, no errors               |
+| **Validation path**     | Open app → Login → Submit empty form                                                                           | Both error messages appear, no navigation                        |
+| **Location swap**       | Set Locations → Fill both → Swap                                                                               | From and To values exchange correctly                            |
+| **Current location**    | Set Locations → Use Current Location                                                                           | "From" fills with "Current Location", GPS coordinates in context |
+| **Back navigation**     | Route View → Back → Trip Ready → Back → Set Locations                                                          | Each back lands on correct screen                                |
+| **Change locations**    | Trip Ready → Change Locations → Modify To → Proceed                                                            | New trip data appears in Trip Ready                              |
+| **Auth persistence**    | Login → Background app for 5 min → Resume                                                                      | Still logged in, Set Locations shows                             |
+| **Logout and re-login** | (If logout implemented) Logout → Login again                                                                   | Clean state, can plan new trip                                   |
 
 ---
 
@@ -191,15 +203,16 @@ For this evaluation project, the primary testing mode is **manual QA** — syste
 
 Test every screen on these three representative sizes:
 
-| Device Class | Example | Screen Width | Screen Height | Notes |
-|---|---|---|---|---|
-| **Small** | iPhone SE 3rd gen | 375 pt | 667 pt | No Dynamic Island. Smallest supported size. |
-| **Medium** | iPhone 14 / Pixel 7 | 390 pt | 844 pt | Most common size. Primary dev target. |
-| **Large** | iPhone 14 Pro Max | 430 pt | 932 pt | Dynamic Island (iOS). Largest size. |
+| Device Class | Example             | Screen Width | Screen Height | Notes                                       |
+| ------------ | ------------------- | ------------ | ------------- | ------------------------------------------- |
+| **Small**    | iPhone SE 3rd gen   | 375 pt       | 667 pt        | No Dynamic Island. Smallest supported size. |
+| **Medium**   | iPhone 14 / Pixel 7 | 390 pt       | 844 pt        | Most common size. Primary dev target.       |
+| **Large**    | iPhone 14 Pro Max   | 430 pt       | 932 pt        | Dynamic Island (iOS). Largest size.         |
 
 ### Responsive Test Points
 
 For each screen × each device:
+
 - [ ] No content overflow or clipping
 - [ ] No excessive whitespace on large screens
 - [ ] All touch targets reachable without awkward stretching
@@ -215,23 +228,25 @@ For each screen × each device:
 
 All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 18pt bold).
 
-| Text | Background | Ratio | Standard | Pass? |
-|---|---|---|---|---|
-| `#FFFFFF` (TextPrimary) on `#0A0E1A` (Background) | — | 18.5:1 | AAA | ✅ |
-| `#FFFFFF` on `#4F8EF7` (Primary button) | — | 4.0:1 | AA (large text) | ✅ |
-| `#8A9BB0` (TextSecondary) on `#141828` (Surface) | — | 5.3:1 | AA | ✅ |
-| `#FF4444` (Error) on `#141828` | — | 4.6:1 | AA | ✅ |
-| `#4A5568` (TextMuted) on `#141828` | — | 2.8:1 | ❌ (decorative only) | ⚠️ Use only for non-essential decoration |
+| Text                                              | Background | Ratio  | Standard             | Pass?                                    |
+| ------------------------------------------------- | ---------- | ------ | -------------------- | ---------------------------------------- |
+| `#FFFFFF` (TextPrimary) on `#0A0E1A` (Background) | —          | 18.5:1 | AAA                  | ✅                                       |
+| `#FFFFFF` on `#4F8EF7` (Primary button)           | —          | 4.0:1  | AA (large text)      | ✅                                       |
+| `#8A9BB0` (TextSecondary) on `#141828` (Surface)  | —          | 5.3:1  | AA                   | ✅                                       |
+| `#FF4444` (Error) on `#141828`                    | —          | 4.6:1  | AA                   | ✅                                       |
+| `#4A5568` (TextMuted) on `#141828`                | —          | 2.8:1  | ❌ (decorative only) | ⚠️ Use only for non-essential decoration |
 
 > `TextMuted` (`#4A5568`) does not meet AA contrast. It is used **only** for placeholder text and decorative dividers — never for required-to-read information.
 
 ### Touch Targets
+
 - [ ] All buttons are at minimum 44×44pt (use `minHeight: 44, minWidth: 44` or `hitSlop`)
 - [ ] Location list items are at minimum 48pt tall
 - [ ] Input fields are at minimum 52pt tall
 - [ ] Small icon buttons use `hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}`
 
 ### Screen Reader (VoiceOver / TalkBack)
+
 - [ ] Every interactive element has `accessibilityLabel`
 - [ ] Every interactive element has `accessibilityRole` ('button', 'text', 'image', etc.)
 - [ ] Error messages are announced via `accessibilityLiveRegion="polite"`
@@ -240,12 +255,14 @@ All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 
 - [ ] Location items have comprehensive labels: "Home, 123 Maple Street, 2.1 kilometers, recent location"
 
 ### Font Scaling
+
 - [ ] Enable "Larger Text" in device accessibility settings
 - [ ] Verify no text is clipped in fixed-height containers
 - [ ] Verify layout doesn't break at 130% and 150% font scale
 - [ ] All `Text` components have `allowFontScaling={true}` (default) — NOT disabled
 
 ### Motion Sensitivity
+
 - [ ] Enable "Reduce Motion" on device
 - [ ] Verify animations are disabled or reduced
 - [ ] Verify app is still fully usable without animations
@@ -256,6 +273,7 @@ All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 
 ## 9. Pre-Submission Final Checklist
 
 ### Code Quality
+
 - [ ] `npm run type-check` — zero TypeScript errors
 - [ ] `npm run lint:check` — zero ESLint errors
 - [ ] `npm run format:check` — no Prettier violations
@@ -264,6 +282,7 @@ All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 
 - [ ] No `// TODO` or `// FIXME` comments
 
 ### Build Verification
+
 - [ ] `expo start --clear` — dev server starts cleanly
 - [ ] App runs on Android device via Expo Go
 - [ ] App runs on iOS device via Expo Go (if available)
@@ -272,23 +291,27 @@ All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 
 - [ ] APK runs through the complete happy path flow without crashes
 
 ### Navigation
+
 - [ ] All 4 screens are reachable following the intended flow
 - [ ] Back navigation works correctly from all screens
 - [ ] Auth guard prevents accessing app screens without auth
 - [ ] Auth guard redirects to Set Locations if already authenticated
 
 ### Data & State
+
 - [ ] Login persists after app restart (AsyncStorage hydration)
 - [ ] Trip data correctly passed from Set Locations → Trip Ready → Route View
 - [ ] TripContext state is correct at each screen
 
 ### Map & Location
+
 - [ ] Map renders with dark style
 - [ ] Both markers appear
 - [ ] Polyline appears
 - [ ] Location permission prompt appears correctly (not silently failing)
 
 ### GitHub Repository
+
 - [ ] All 12 documentation files in `docs/` directory
 - [ ] Clean commit history with Conventional Commit messages
 - [ ] `.gitignore` excludes `node_modules/`, `.expo/`, build artifacts
@@ -297,4 +320,4 @@ All text must meet WCAG AA (minimum 4.5:1 for body text, 3:1 for large text ≥ 
 
 ---
 
-*This document defines the QA gate. A build is submission-ready only when all checked items pass.*
+_This document defines the QA gate. A build is submission-ready only when all checked items pass._

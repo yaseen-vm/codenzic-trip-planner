@@ -9,14 +9,14 @@
 
 Before starting, ensure the following are installed and configured on your machine:
 
-| Tool | Version | Check Command | Install |
-|---|---|---|---|
-| **Node.js** | 20.x LTS (minimum 18.x) | `node --version` | [nodejs.org](https://nodejs.org) |
-| **npm** | 10.x (bundled with Node 20) | `npm --version` | Bundled with Node |
-| **Git** | 2.x+ | `git --version` | [git-scm.com](https://git-scm.com) |
-| **Expo CLI** | Latest | `npx expo --version` | Auto-installed via npx |
-| **EAS CLI** | Latest | `eas --version` | `npm install -g eas-cli` |
-| **Expo Account** | — | `eas whoami` | [expo.dev/signup](https://expo.dev/signup) |
+| Tool             | Version                     | Check Command        | Install                                    |
+| ---------------- | --------------------------- | -------------------- | ------------------------------------------ |
+| **Node.js**      | 20.x LTS (minimum 18.x)     | `node --version`     | [nodejs.org](https://nodejs.org)           |
+| **npm**          | 10.x (bundled with Node 20) | `npm --version`      | Bundled with Node                          |
+| **Git**          | 2.x+                        | `git --version`      | [git-scm.com](https://git-scm.com)         |
+| **Expo CLI**     | Latest                      | `npx expo --version` | Auto-installed via npx                     |
+| **EAS CLI**      | Latest                      | `eas --version`      | `npm install -g eas-cli`                   |
+| **Expo Account** | —                           | `eas whoami`         | [expo.dev/signup](https://expo.dev/signup) |
 
 > **Note:** You do NOT need Xcode or Android Studio to run the app via Expo Go. You only need them if you are doing a local native build.
 
@@ -51,6 +51,7 @@ After running `npm start`, you will see a QR code in your terminal and the Expo 
 ## 3. Running on a Physical Device (Expo Go)
 
 ### Prerequisites
+
 - Install **Expo Go** on your device:
   - [iOS App Store](https://apps.apple.com/app/expo-go/id982107779)
   - [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
@@ -59,12 +60,14 @@ After running `npm start`, you will see a QR code in your terminal and the Expo 
 ### Steps
 
 **Android:**
+
 1. Open Expo Go on your Android device
 2. Tap "Scan QR code"
 3. Scan the QR code from the terminal
 4. App will bundle and open on your device
 
 **iOS:**
+
 1. Open the iOS Camera app
 2. Point it at the QR code from the terminal
 3. Tap the Expo Go notification banner that appears
@@ -133,6 +136,7 @@ eas build:configure
 ```
 
 This command:
+
 - Links the project to your Expo account
 - Generates a `projectId` in `app.json` under `expo.extra.eas.projectId`
 - Creates or verifies `eas.json` configuration
@@ -185,11 +189,11 @@ adb install path/to/downloaded.apk
 
 ## 6. Build Profiles Reference
 
-| Profile | Command | Output | Intended Use |
-|---|---|---|---|
-| `development` | `eas build --platform android --profile development` | Debug APK (with dev client) | Internal development + debugging |
-| `preview` | `eas build --platform android --profile preview` | Release APK | **Use this for assignment submission** |
-| `production` | `eas build --platform android --profile production` | AAB (App Bundle) | Play Store submission only |
+| Profile       | Command                                              | Output                      | Intended Use                           |
+| ------------- | ---------------------------------------------------- | --------------------------- | -------------------------------------- |
+| `development` | `eas build --platform android --profile development` | Debug APK (with dev client) | Internal development + debugging       |
+| `preview`     | `eas build --platform android --profile preview`     | Release APK                 | **Use this for assignment submission** |
+| `production`  | `eas build --platform android --profile production`  | AAB (App Bundle)            | Play Store submission only             |
 
 > **Assignment Submission:** Always use the `preview` profile. It produces a standalone `.apk` that reviewers can install without any development setup.
 
@@ -242,6 +246,7 @@ The only configuration item that needs updating is the Google Maps API key in `a
 
 **Symptom:** `Error: EADDRINUSE: address already in use :::8081`  
 **Fix:**
+
 ```bash
 # Kill the process using port 8081
 npx kill-port 8081
@@ -257,6 +262,7 @@ npx expo start --clear
 
 **Symptom:** App shows "No routes" error on first render  
 **Fix:** Ensure `app/index.tsx` exists and the `main` field in `package.json` is `"expo-router/entry"`:
+
 ```json
 {
   "main": "expo-router/entry"
@@ -269,6 +275,7 @@ npx expo start --clear
 
 **Symptom:** Crash with `ReanimatedError: [Reanimated] Worklet function...`  
 **Fix:** Ensure `react-native-reanimated/plugin` is **last** in `babel.config.js`:
+
 ```javascript
 // babel.config.js
 module.exports = {
@@ -279,7 +286,9 @@ module.exports = {
   ],
 };
 ```
+
 Then clear cache:
+
 ```bash
 npx expo start --clear
 ```
@@ -311,6 +320,7 @@ npx expo start --clear
 
 **Symptom:** `requestForegroundPermissionsAsync()` returns `denied` immediately without showing a prompt  
 **Fix:** The user may have previously denied permission. Guide them:
+
 ```typescript
 // Check if we should show rationale (Android)
 const { status } = await Location.requestForegroundPermissionsAsync();
@@ -321,7 +331,7 @@ if (status !== 'granted') {
     [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Open Settings', onPress: () => Linking.openSettings() },
-    ]
+    ],
   );
 }
 ```
@@ -335,7 +345,7 @@ if (status !== 'granted') {
 
 1. **Incorrect `compileSdkVersion` / `targetSdkVersion`:**
    - Expo SDK 51 targets SDK 34. Don't override these.
-   
+
 2. **Conflicting native dependencies:**
    - Run `npx expo-doctor` to detect dependency conflicts
    - Follow suggestions to align versions
@@ -349,6 +359,7 @@ if (status !== 'granted') {
 
 **Symptom:** Type errors that weren't there before  
 **Fix:**
+
 ```bash
 # Clear node_modules and reinstall
 rm -rf node_modules
@@ -364,6 +375,7 @@ npm list typescript
 
 **Symptom:** "The project requests SDK 51, but the installed Expo Go supports SDK X"  
 **Fix:**
+
 ```bash
 # Update Expo Go on your device to the latest version
 # Or use Expo Go compatible with SDK 51:
@@ -397,22 +409,23 @@ npm run prebuild       # Generate native android/ and ios/ folders (local builds
 
 When submitting for the Codenzic Innovations evaluation, provide:
 
-| Artifact | Location | Notes |
-|---|---|---|
-| **GitHub Repository URL** | Public repo | All code, docs, clean history |
-| **APK Download Link** | EAS Build dashboard URL | Generated with `preview` profile |
-| **README** | `README.md` in repo root | Setup instructions, screen descriptions |
-| **Documentation** | `docs/` directory | All 12 documentation files |
+| Artifact                  | Location                 | Notes                                   |
+| ------------------------- | ------------------------ | --------------------------------------- |
+| **GitHub Repository URL** | Public repo              | All code, docs, clean history           |
+| **APK Download Link**     | EAS Build dashboard URL  | Generated with `preview` profile        |
+| **README**                | `README.md` in repo root | Setup instructions, screen descriptions |
+| **Documentation**         | `docs/` directory        | All 12 documentation files              |
 
 ### APK Download URL
 
 After running `eas build --platform android --profile preview`, the EAS dashboard provides a temporary download URL (valid for 30 days). Include this URL directly in your README's "Download" section.
 
 Example format:
+
 ```
 https://expo.dev/artifacts/eas/XXXXXXXXXXXXXXXXXXXXXXXXXX.apk
 ```
 
 ---
 
-*See `10-TESTING-AND-QA.md` for the full pre-submission QA checklist. See `README.md` for the public-facing project overview.*
+_See `10-TESTING-AND-QA.md` for the full pre-submission QA checklist. See `README.md` for the public-facing project overview._

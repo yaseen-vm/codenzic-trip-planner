@@ -9,13 +9,13 @@
 
 ## 1. Project Identity
 
-| Field | Value |
-|---|---|
-| **App Name** | TripPath |
-| **Platform** | iOS & Android (React Native / Expo) |
-| **Assignment Issuer** | Codenzic Innovations |
-| **Purpose** | Technical evaluation — mobile app development proficiency |
-| **Delivery** | GitHub repository + Android APK |
+| Field                 | Value                                                     |
+| --------------------- | --------------------------------------------------------- |
+| **App Name**          | TripPath                                                  |
+| **Platform**          | iOS & Android (React Native / Expo)                       |
+| **Assignment Issuer** | Codenzic Innovations                                      |
+| **Purpose**           | Technical evaluation — mobile app development proficiency |
+| **Delivery**          | GitHub repository + Android APK                           |
 
 ---
 
@@ -36,23 +36,23 @@ The application demonstrates core competencies expected of a senior React Native
 
 ## 3. Tech Stack
 
-| Category | Technology | Version | Role |
-|---|---|---|---|
-| **Framework** | React Native | 0.74.x | Cross-platform mobile runtime |
-| **Build Toolchain** | Expo SDK | ~51.0.0 | Managed workflow, OTA, build |
-| **Routing** | Expo Router | ~3.5.0 | File-based navigation (wraps React Navigation v6) |
-| **Language** | TypeScript | ~5.3.0 | Type safety, improved DX |
-| **Navigation** | React Navigation (via Expo Router) | v6 | Stack, bottom tabs, navigation state |
-| **Maps** | react-native-maps | ~1.14.0 | Interactive map, markers, polylines |
-| **Location** | expo-location | ~17.0.0 | GPS coordinates, permissions |
-| **Storage** | @react-native-async-storage/async-storage | ~1.23.0 | Auth token persistence |
-| **Forms** | react-hook-form | ^7.51.0 | Performant form state management |
-| **Validation** | zod | ^3.23.0 | Schema-based validation, type inference |
-| **Animations** | react-native-reanimated | ~3.10.0 | Fluid, native-thread animations |
-| **Gestures** | react-native-gesture-handler | ~2.16.0 | Gesture recognition for bottom sheet |
-| **Styling** | React Native StyleSheet | built-in | Core styling (NativeWind optional upgrade) |
-| **Icons** | @expo/vector-icons (Ionicons) | built-in | Consistent iconography |
-| **Fonts** | expo-font | ~12.0.0 | Inter font loading |
+| Category            | Technology                                | Version  | Role                                              |
+| ------------------- | ----------------------------------------- | -------- | ------------------------------------------------- |
+| **Framework**       | React Native                              | 0.74.x   | Cross-platform mobile runtime                     |
+| **Build Toolchain** | Expo SDK                                  | ~51.0.0  | Managed workflow, OTA, build                      |
+| **Routing**         | Expo Router                               | ~3.5.0   | File-based navigation (wraps React Navigation v6) |
+| **Language**        | TypeScript                                | ~5.3.0   | Type safety, improved DX                          |
+| **Navigation**      | React Navigation (via Expo Router)        | v6       | Stack, bottom tabs, navigation state              |
+| **Maps**            | react-native-maps                         | ~1.14.0  | Interactive map, markers, polylines               |
+| **Location**        | expo-location                             | ~17.0.0  | GPS coordinates, permissions                      |
+| **Storage**         | @react-native-async-storage/async-storage | ~1.23.0  | Auth token persistence                            |
+| **Forms**           | react-hook-form                           | ^7.51.0  | Performant form state management                  |
+| **Validation**      | zod                                       | ^3.23.0  | Schema-based validation, type inference           |
+| **Animations**      | react-native-reanimated                   | ~3.10.0  | Fluid, native-thread animations                   |
+| **Gestures**        | react-native-gesture-handler              | ~2.16.0  | Gesture recognition for bottom sheet              |
+| **Styling**         | React Native StyleSheet                   | built-in | Core styling (NativeWind optional upgrade)        |
+| **Icons**           | @expo/vector-icons (Ionicons)             | built-in | Consistent iconography                            |
+| **Fonts**           | expo-font                                 | ~12.0.0  | Inter font loading                                |
 
 ### Why This Stack?
 
@@ -90,14 +90,14 @@ The flow is strictly linear forward, with back navigation available at each step
 
 > All times are approximate. The goal is to deliver a polished, reviewable deliverable — not to fill 48 hours.
 
-| Block | Hours | Milestone | Deliverables |
-|---|---|---|---|
-| **Block 1** | 0–8 hrs | **Setup & Foundation** | Expo project init, Expo Router config, folder structure, constants (colors, typography, spacing), TypeScript types, mock data |
-| **Block 2** | 8–16 hrs | **Auth & Design System** | Login screen (fully styled, validation with react-hook-form + zod, AsyncStorage, animations), Button + Input + Card components |
-| **Block 3** | 16–24 hrs | **Location Screen** | Set Locations screen, LocationItem, LocationSearchBar, expo-location integration, suggestions filtering, TripContext |
-| **Block 4** | 24–32 hrs | **Trip Ready Screen** | Trip Ready screen, TripSummaryCard, TripMetaRow, slide-up animation, mock distance/duration calculation |
-| **Block 5** | 32–40 hrs | **Route View Screen** | Route View screen, MapView integration, dark map style, RoutePolyline, LocationMarker, floating BottomSheet |
-| **Block 6** | 40–48 hrs | **Polish & Delivery** | End-to-end QA, edge case handling, README, APK build via EAS, GitHub push |
+| Block       | Hours     | Milestone                | Deliverables                                                                                                                   |
+| ----------- | --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Block 1** | 0–8 hrs   | **Setup & Foundation**   | Expo project init, Expo Router config, folder structure, constants (colors, typography, spacing), TypeScript types, mock data  |
+| **Block 2** | 8–16 hrs  | **Auth & Design System** | Login screen (fully styled, validation with react-hook-form + zod, AsyncStorage, animations), Button + Input + Card components |
+| **Block 3** | 16–24 hrs | **Location Screen**      | Set Locations screen, LocationItem, LocationSearchBar, expo-location integration, suggestions filtering, TripContext           |
+| **Block 4** | 24–32 hrs | **Trip Ready Screen**    | Trip Ready screen, TripSummaryCard, TripMetaRow, slide-up animation, mock distance/duration calculation                        |
+| **Block 5** | 32–40 hrs | **Route View Screen**    | Route View screen, MapView integration, dark map style, RoutePolyline, LocationMarker, floating BottomSheet                    |
+| **Block 6** | 40–48 hrs | **Polish & Delivery**    | End-to-end QA, edge case handling, README, APK build via EAS, GitHub push                                                      |
 
 ### Daily Checkpoints
 
@@ -109,6 +109,7 @@ The flow is strictly linear forward, with back navigation available at each step
 ## 6. Submission Checklist
 
 ### GitHub Repository
+
 - [ ] Clean `main` branch with meaningful commit history (Conventional Commits)
 - [ ] Complete folder structure as documented in `02-ARCHITECTURE.md`
 - [ ] No `.env` secrets or API keys committed (none required for this project)
@@ -117,6 +118,7 @@ The flow is strictly linear forward, with back navigation available at each step
 - [ ] Professional `README.md` with setup instructions
 
 ### Android APK
+
 - [ ] Generated via `eas build --platform android --profile preview`
 - [ ] APK installs and runs on Android 10+ (API 29+)
 - [ ] All 4 screens navigable without crashes
@@ -126,6 +128,7 @@ The flow is strictly linear forward, with back navigation available at each step
 - [ ] No visible console errors in production build
 
 ### Code Quality
+
 - [ ] TypeScript strict mode — zero `any` types
 - [ ] No `eslint` errors
 - [ ] No commented-out dead code
@@ -137,9 +140,11 @@ The flow is strictly linear forward, with back navigation available at each step
 ## 7. Key Engineering Principles
 
 ### 1. Component Reusability
+
 Every UI primitive (Button, Input, Card, Badge) is built as a generic, prop-driven component stored in `components/ui/`. No one-off styled components that live inside screen files. If a pattern appears more than once, it becomes a component.
 
 ### 2. Separation of Concerns
+
 - **Screens** = layout and composition only. No business logic.
 - **Hooks** = all side effects, data fetching, and state manipulation.
 - **Context** = shared application state (auth session, active trip).
@@ -147,18 +152,21 @@ Every UI primitive (Button, Input, Card, Badge) is built as a generic, prop-driv
 - **Constants** = zero magic numbers or hardcoded strings in component files.
 
 ### 3. Clean Code
+
 - Functions do one thing.
 - Variables and props are named to read like sentences.
 - No function exceeds 40 lines without refactoring into sub-functions.
 - All TypeScript interfaces are defined in `types/index.ts` — never inline unless trivially simple.
 
 ### 4. Pixel-Perfect UI
+
 - All measurements come from the spacing scale in `constants/spacing.ts`.
 - All colors come from `constants/colors.ts` — never hardcoded hex strings in components.
 - All text styles come from `constants/typography.ts` — no orphan `fontSize` declarations.
 - UI is tested on SE (small), standard, and Pro Max (large) screen sizes.
 
 ### 5. Performance First
+
 - `FlatList` (not `ScrollView`) for any list of variable-length data.
 - `React.memo` on all pure presentational components.
 - `useCallback` on all event handlers passed as props.
@@ -166,6 +174,7 @@ Every UI primitive (Button, Input, Card, Badge) is built as a generic, prop-driv
 - No anonymous arrow functions in JSX props (except where unavoidable with hooks).
 
 ### 6. Accessibility
+
 - All interactive elements have `accessibilityLabel` and `accessibilityRole`.
 - Touch targets are minimum 44×44pt.
 - Text color contrast meets WCAG AA (4.5:1 for body text).
@@ -189,13 +198,13 @@ The following are explicitly excluded from this evaluation project and should no
 
 ## 9. Contact & Assignment Reference
 
-| Field | Detail |
-|---|---|
-| **Assignment Issuer** | Codenzic Innovations |
-| **Evaluation Type** | Take-home technical assignment |
-| **Target Role** | React Native / Mobile Developer |
-| **Delivery Format** | GitHub repo + APK download link |
+| Field                 | Detail                          |
+| --------------------- | ------------------------------- |
+| **Assignment Issuer** | Codenzic Innovations            |
+| **Evaluation Type**   | Take-home technical assignment  |
+| **Target Role**       | React Native / Mobile Developer |
+| **Delivery Format**   | GitHub repo + APK download link |
 
 ---
 
-*This document is part of the TripPath engineering documentation suite. See the full doc index in `README.md`.*
+_This document is part of the TripPath engineering documentation suite. See the full doc index in `README.md`._

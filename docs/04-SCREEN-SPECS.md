@@ -7,21 +7,23 @@
 
 ## Overview
 
-| Screen | Route | Auth Required |
-|---|---|---|
-| Login | `/(auth)/login` | No |
-| Set Locations | `/(app)/set-locations` | Yes |
-| Trip Ready | `/(app)/trip-ready` | Yes |
-| Route View | `/(app)/route-view` | Yes |
+| Screen        | Route                  | Auth Required |
+| ------------- | ---------------------- | ------------- |
+| Login         | `/(auth)/login`        | No            |
+| Set Locations | `/(app)/set-locations` | Yes           |
+| Trip Ready    | `/(app)/trip-ready`    | Yes           |
+| Route View    | `/(app)/route-view`    | Yes           |
 
 ---
 
 ## Screen 1: Login Screen
 
 ### Route
+
 `/(auth)/login`
 
 ### Purpose
+
 Authenticate the user and persist their session. This is the entry point for all unauthenticated users. The screen uses a mock authentication system — any syntactically valid email + password (≥6 chars) is accepted.
 
 ---
@@ -60,6 +62,7 @@ Authenticate the user and persist their session. This is the entry point for all
 ```
 
 **Visual notes:**
+
 - The logo area occupies approximately 30% of screen height.
 - The form card has `paddingHorizontal: Spacing.lg` (16px).
 - `KeyboardAvoidingView` wraps the entire screen (`behavior="padding"` on iOS, `behavior="height"` on Android).
@@ -102,7 +105,11 @@ const [isLoading, setIsLoading] = useState(false);
 const [authError, setAuthError] = useState<string | null>(null);
 
 // react-hook-form
-const { control, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+const {
+  control,
+  handleSubmit,
+  formState: { errors },
+} = useForm<LoginFormValues>({
   resolver: zodResolver(loginSchema),
   mode: 'onBlur', // Validate on blur for better UX
 });
@@ -117,10 +124,7 @@ const { control, handleSubmit, formState: { errors } } = useForm<LoginFormValues
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email address is required')
-    .email('Please enter a valid email address'),
+  email: z.string().min(1, 'Email address is required').email('Please enter a valid email address'),
   password: z
     .string()
     .min(1, 'Password is required')
@@ -132,11 +136,11 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 **Field-level error messages:**
 
-| Field | Trigger | Error Message |
-|---|---|---|
-| Email | Empty on submit | `"Email address is required"` |
-| Email | Invalid format | `"Please enter a valid email address"` |
-| Password | Empty on submit | `"Password is required"` |
+| Field    | Trigger           | Error Message                              |
+| -------- | ----------------- | ------------------------------------------ |
+| Email    | Empty on submit   | `"Email address is required"`              |
+| Email    | Invalid format    | `"Please enter a valid email address"`     |
+| Password | Empty on submit   | `"Password is required"`                   |
 | Password | Less than 6 chars | `"Password must be at least 6 characters"` |
 
 ---
@@ -151,7 +155,7 @@ const handleLogin = async (data: LoginFormValues) => {
 
   try {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     // Mock: accept any valid-format email + password
     // In production: POST /auth/login
@@ -180,28 +184,28 @@ const handleLogin = async (data: LoginFormValues) => {
 
 ### Animations
 
-| Element | Animation | Trigger | Details |
-|---|---|---|---|
-| Entire screen | Fade in (opacity 0→1) | Mount | 500ms, `Easing.out(Easing.cubic)` |
-| Logo | Slide down + fade (translateY -20→0) | Mount | 600ms, 100ms delay |
-| Form container | Slide up + fade (translateY 20→0) | Mount | 600ms, 200ms delay |
-| Sign In button | Scale spring (0.96→1) | Press | `withSpring({ damping: 15 })` |
-| Loading indicator | Replace button text | isLoading=true | Crossfade 200ms |
+| Element           | Animation                            | Trigger        | Details                           |
+| ----------------- | ------------------------------------ | -------------- | --------------------------------- |
+| Entire screen     | Fade in (opacity 0→1)                | Mount          | 500ms, `Easing.out(Easing.cubic)` |
+| Logo              | Slide down + fade (translateY -20→0) | Mount          | 600ms, 100ms delay                |
+| Form container    | Slide up + fade (translateY 20→0)    | Mount          | 600ms, 200ms delay                |
+| Sign In button    | Scale spring (0.96→1)                | Press          | `withSpring({ damping: 15 })`     |
+| Loading indicator | Replace button text                  | isLoading=true | Crossfade 200ms                   |
 
 ---
 
 ### Edge Cases
 
-| Case | Behavior |
-|---|---|
-| Keyboard overlaps inputs | `KeyboardAvoidingView` with platform-specific `behavior` lifts content |
-| Submit while loading | Button disabled, form inputs disabled via `editable={false}` |
-| Long email address | Input scrolls horizontally (default `TextInput` behavior) |
-| Paste into email field | Supported natively, validation runs on blur |
-| Back button on Android | Not applicable — this is the root auth screen, back exits app |
-| Already authenticated on mount | Auth guard in `_layout.tsx` immediately redirects to `/(app)/set-locations` |
-| Network-like delay (mock) | 1200ms timeout simulates real API call — shows loading spinner |
-| Create Account tap (v1) | Shows `Alert` or `Toast`: "Registration coming soon! Use any email to sign in." |
+| Case                           | Behavior                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| Keyboard overlaps inputs       | `KeyboardAvoidingView` with platform-specific `behavior` lifts content          |
+| Submit while loading           | Button disabled, form inputs disabled via `editable={false}`                    |
+| Long email address             | Input scrolls horizontally (default `TextInput` behavior)                       |
+| Paste into email field         | Supported natively, validation runs on blur                                     |
+| Back button on Android         | Not applicable — this is the root auth screen, back exits app                   |
+| Already authenticated on mount | Auth guard in `_layout.tsx` immediately redirects to `/(app)/set-locations`     |
+| Network-like delay (mock)      | 1200ms timeout simulates real API call — shows loading spinner                  |
+| Create Account tap (v1)        | Shows `Alert` or `Toast`: "Registration coming soon! Use any email to sign in." |
 
 ---
 
@@ -210,9 +214,11 @@ const handleLogin = async (data: LoginFormValues) => {
 ## Screen 2: Set Locations Screen
 
 ### Route
+
 `/(app)/set-locations`
 
 ### Purpose
+
 Allow the user to select a starting location and a destination. Supports GPS-based current location, manual text entry (with filtered suggestions), and recent/popular location quick-picks.
 
 ---
@@ -300,11 +306,13 @@ const [suggestions, setSuggestions] = useState<Location[]>(MOCK_LOCATIONS);
 
 // Derived
 const filteredSuggestions = useMemo(
-  () => suggestions.filter(loc =>
-    loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    loc.address.toLowerCase().includes(searchQuery.toLowerCase())
-  ),
-  [suggestions, searchQuery]
+  () =>
+    suggestions.filter(
+      (loc) =>
+        loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        loc.address.toLowerCase().includes(searchQuery.toLowerCase()),
+    ),
+  [suggestions, searchQuery],
 );
 ```
 
@@ -351,7 +359,7 @@ export const MOCK_LOCATIONS: Location[] = [
     id: 'loc_005',
     name: 'Airport Terminal 1',
     address: 'International Airport, Gate A',
-    coordinates: { latitude: 37.6213, longitude: -122.3790 },
+    coordinates: { latitude: 37.6213, longitude: -122.379 },
     type: 'popular',
     distance: '18.4 km',
   },
@@ -370,16 +378,16 @@ export const MOCK_LOCATIONS: Location[] = [
 
 ### Interactions
 
-| Interaction | Behavior |
-|---|---|
-| Tap **From** card | `activeInput = 'from'`, input field gains focus |
-| Tap **To** card | `activeInput = 'to'`, input field gains focus |
-| Type in active input | Updates `searchQuery`, filters `filteredSuggestions` |
-| Tap a **LocationItem** | Fills `activeInput` field with selected location, clears query, focuses other empty field |
-| Tap **Swap** button | Calls `swapLocations()` in TripContext — swaps From and To |
+| Interaction                  | Behavior                                                                                                                            |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Tap **From** card            | `activeInput = 'from'`, input field gains focus                                                                                     |
+| Tap **To** card              | `activeInput = 'to'`, input field gains focus                                                                                       |
+| Type in active input         | Updates `searchQuery`, filters `filteredSuggestions`                                                                                |
+| Tap a **LocationItem**       | Fills `activeInput` field with selected location, clears query, focuses other empty field                                           |
+| Tap **Swap** button          | Calls `swapLocations()` in TripContext — swaps From and To                                                                          |
 | Tap **Use Current Location** | Requests expo-location permission → gets coords → reverse geocodes (mock) → fills `activeInput` (defaults to 'from' if none active) |
-| Clear button (×) on a card | Clears that location field, resets `activeInput` to that field |
-| Tap **Proceed** | Navigates to `/(app)/trip-ready` with trip data (only active when both fields filled) |
+| Clear button (×) on a card   | Clears that location field, resets `activeInput` to that field                                                                      |
+| Tap **Proceed**              | Navigates to `/(app)/trip-ready` with trip data (only active when both fields filled)                                               |
 
 ---
 
@@ -394,7 +402,9 @@ const fetchCurrentLocation = async () => {
       Alert.alert('Permission Denied', 'Location permission is required to use this feature.');
       return;
     }
-    const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+    });
     const currentLoc: Location = {
       id: 'current',
       name: 'Current Location',
@@ -415,14 +425,14 @@ const fetchCurrentLocation = async () => {
 
 ### Edge Cases
 
-| Case | Behavior |
-|---|---|
-| Both fields empty on mount | Proceed button is disabled (opacity 0.5, `disabled` prop) |
-| Location permission denied | Alert with explanation, button shows error state briefly |
-| Very long location name | Text truncates with `numberOfLines={1}` ellipsis |
-| No matches in search | FlatList shows empty component: "No matching locations found" |
-| Swap when one field empty | Swap still executes — the empty field becomes the filled field and vice versa |
-| Device location services off | expo-location returns error — handled with Alert |
+| Case                         | Behavior                                                                      |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| Both fields empty on mount   | Proceed button is disabled (opacity 0.5, `disabled` prop)                     |
+| Location permission denied   | Alert with explanation, button shows error state briefly                      |
+| Very long location name      | Text truncates with `numberOfLines={1}` ellipsis                              |
+| No matches in search         | FlatList shows empty component: "No matching locations found"                 |
+| Swap when one field empty    | Swap still executes — the empty field becomes the filled field and vice versa |
+| Device location services off | expo-location returns error — handled with Alert                              |
 
 ---
 
@@ -431,9 +441,11 @@ const fetchCurrentLocation = async () => {
 ## Screen 3: Trip Ready Screen
 
 ### Route
+
 `/(app)/trip-ready`
 
 ### Purpose
+
 Confirm the selected trip before viewing the route. Shows the user's from/to selection with mock-calculated distance and estimated time, with a clear CTA to proceed to the map.
 
 ---
@@ -518,8 +530,8 @@ const [isCalculating, setIsCalculating] = useState(true);
 
 // Derived on mount:
 interface TripMeta {
-  distance: string;      // e.g., "12.4 km"
-  duration: string;      // e.g., "24 min"
+  distance: string; // e.g., "12.4 km"
+  duration: string; // e.g., "24 min"
   travelMode: 'car';
 }
 ```
@@ -533,15 +545,16 @@ interface TripMeta {
 useEffect(() => {
   const calculate = async () => {
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate delay
+    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate delay
 
     // Mock: random distance between 5-50km
     const distKm = (Math.random() * 45 + 5).toFixed(1);
     // Mock: rough time estimate (avg 40km/h in city)
     const durationMin = Math.round((parseFloat(distKm) / 40) * 60);
-    const durationFormatted = durationMin >= 60
-      ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`
-      : `${durationMin} min`;
+    const durationFormatted =
+      durationMin >= 60
+        ? `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`
+        : `${durationMin} min`;
 
     setTripData({
       distance: `${distKm} km`,
@@ -559,12 +572,12 @@ useEffect(() => {
 
 ### Animations
 
-| Element | Animation | Details |
-|---|---|---|
-| Illustration | Fade in | 500ms on mount |
-| TripSummaryCard | Slide up (translateY: 60→0) + fade | 500ms, 200ms delay, spring easing |
-| MetaChips | Shimmer while `isCalculating=true` | Replaced with real data on resolve |
-| "View Route" button | Fade in | 500ms, 400ms delay (appears after card) |
+| Element             | Animation                          | Details                                 |
+| ------------------- | ---------------------------------- | --------------------------------------- |
+| Illustration        | Fade in                            | 500ms on mount                          |
+| TripSummaryCard     | Slide up (translateY: 60→0) + fade | 500ms, 200ms delay, spring easing       |
+| MetaChips           | Shimmer while `isCalculating=true` | Replaced with real data on resolve      |
+| "View Route" button | Fade in                            | 500ms, 400ms delay (appears after card) |
 
 ### Shimmer State
 
@@ -599,11 +612,11 @@ const handleViewRoute = () => {
 
 ### Edge Cases
 
-| Case | Behavior |
-|---|---|
+| Case                                           | Behavior                                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------- |
 | Screen mounted without fromLocation/toLocation | Should not occur (auth guard + flow guard), but if it does → redirect to set-locations |
-| Very long location name | Text truncates with `numberOfLines={2}` |
-| Calculation delay UI | Shimmer placeholders prevent layout shift |
+| Very long location name                        | Text truncates with `numberOfLines={2}`                                                |
+| Calculation delay UI                           | Shimmer placeholders prevent layout shift                                              |
 
 ---
 
@@ -612,9 +625,11 @@ const handleViewRoute = () => {
 ## Screen 4: Route View Screen
 
 ### Route
+
 `/(app)/route-view`
 
 ### Purpose
+
 Display the planned route on a dark-styled interactive map with markers and a polyline. A floating bottom sheet shows trip details and the final "Start Navigation" CTA.
 
 ---
@@ -736,10 +751,14 @@ export const generateMockRoute = (from: Coordinate, to: Coordinate): Coordinate[
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
     // Linear interpolation with slight random curvature
-    const lat = from.latitude + (to.latitude - from.latitude) * t
-      + (Math.random() - 0.5) * 0.005 * Math.sin(t * Math.PI);
-    const lng = from.longitude + (to.longitude - from.longitude) * t
-      + (Math.random() - 0.5) * 0.005 * Math.sin(t * Math.PI);
+    const lat =
+      from.latitude +
+      (to.latitude - from.latitude) * t +
+      (Math.random() - 0.5) * 0.005 * Math.sin(t * Math.PI);
+    const lng =
+      from.longitude +
+      (to.longitude - from.longitude) * t +
+      (Math.random() - 0.5) * 0.005 * Math.sin(t * Math.PI);
     points.push({ latitude: lat, longitude: lng });
   }
 
@@ -751,11 +770,11 @@ export const generateMockRoute = (from: Coordinate, to: Coordinate): Coordinate[
 
 ### Bottom Sheet Behavior
 
-| State | Height | Trigger |
-|---|---|---|
-| Resting (default) | `SCREEN_HEIGHT * 0.30` | Initial render |
-| Expanded | `SCREEN_HEIGHT * 0.65` | Drag up / tap drag handle |
-| Collapsed (resting) | `SCREEN_HEIGHT * 0.30` | Drag down from expanded |
+| State               | Height                 | Trigger                   |
+| ------------------- | ---------------------- | ------------------------- |
+| Resting (default)   | `SCREEN_HEIGHT * 0.30` | Initial render            |
+| Expanded            | `SCREEN_HEIGHT * 0.65` | Drag up / tap drag handle |
+| Collapsed (resting) | `SCREEN_HEIGHT * 0.30` | Drag down from expanded   |
 
 The bottom sheet uses `PanResponder` (or `react-native-gesture-handler`'s `PanGestureHandler`) to detect drag. It snaps to either resting or expanded based on velocity and position thresholds.
 
@@ -806,7 +825,7 @@ const handleStartNavigation = async () => {
   } else {
     // Fallback: open Google Maps in browser
     await Linking.openURL(
-      `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
+      `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
     );
   }
 };
@@ -816,15 +835,15 @@ const handleStartNavigation = async () => {
 
 ### Edge Cases
 
-| Case | Behavior |
-|---|---|
-| Map fails to load | Show error state overlay with retry button |
-| No route coordinates | Show straight-line polyline between two points as fallback |
-| Small screen (SE) | Bottom sheet takes 35% height to ensure map is still visible |
-| Landscape orientation | Not officially supported in v1 — lock to portrait via `app.json` orientation setting |
-| Back navigation | Navigates back to Trip Ready screen (stack behavior) |
-| "Start Navigation" — no maps app | Falls back to browser-based Google Maps URL |
+| Case                             | Behavior                                                                             |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| Map fails to load                | Show error state overlay with retry button                                           |
+| No route coordinates             | Show straight-line polyline between two points as fallback                           |
+| Small screen (SE)                | Bottom sheet takes 35% height to ensure map is still visible                         |
+| Landscape orientation            | Not officially supported in v1 — lock to portrait via `app.json` orientation setting |
+| Back navigation                  | Navigates back to Trip Ready screen (stack behavior)                                 |
+| "Start Navigation" — no maps app | Falls back to browser-based Google Maps URL                                          |
 
 ---
 
-*See `05-COMPONENT-GUIDE.md` for detailed component implementation specs.*
+_See `05-COMPONENT-GUIDE.md` for detailed component implementation specs._

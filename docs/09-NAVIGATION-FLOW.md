@@ -64,6 +64,7 @@ flowchart TD
 ### Root Layout (`app/_layout.tsx`)
 
 The root layout is the outermost shell. It:
+
 1. Loads fonts (`useFonts` from `expo-font`)
 2. Manages `SplashScreen` visibility
 3. Provides `AuthContext` and `TripContext`
@@ -114,22 +115,22 @@ Root Layout (AuthContext, TripContext)
 
 ## 3. Screen Transition Specifications
 
-| Transition | From → To | Animation | Duration | Notes |
-|---|---|---|---|---|
-| **Auth to App** | Login → Set Locations | `fade` | 300ms | Feels like a session start, not a stack push. Implemented via `router.replace` (no back) |
-| **Forward (App)** | Set Locations → Trip Ready | `slide_from_right` | 350ms | Standard iOS/Android forward navigation |
-| **Modal** | Trip Ready → Route View | `slide_from_bottom` | 400ms | Map "comes up" from below — modal presentation |
-| **Back (Modal)** | Route View → Trip Ready | `slide_from_top` (auto) | 400ms | Auto-reverse of modal entry |
-| **Back (Standard)** | Trip Ready → Set Locations | `slide_from_left` (auto) | 350ms | Auto-reverse of forward push |
-| **Auth Redirect** | Any → Login | `fade` | 250ms | Fast, non-jarring redirect when token cleared |
+| Transition          | From → To                  | Animation                | Duration | Notes                                                                                    |
+| ------------------- | -------------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------------- |
+| **Auth to App**     | Login → Set Locations      | `fade`                   | 300ms    | Feels like a session start, not a stack push. Implemented via `router.replace` (no back) |
+| **Forward (App)**   | Set Locations → Trip Ready | `slide_from_right`       | 350ms    | Standard iOS/Android forward navigation                                                  |
+| **Modal**           | Trip Ready → Route View    | `slide_from_bottom`      | 400ms    | Map "comes up" from below — modal presentation                                           |
+| **Back (Modal)**    | Route View → Trip Ready    | `slide_from_top` (auto)  | 400ms    | Auto-reverse of modal entry                                                              |
+| **Back (Standard)** | Trip Ready → Set Locations | `slide_from_left` (auto) | 350ms    | Auto-reverse of forward push                                                             |
+| **Auth Redirect**   | Any → Login                | `fade`                   | 250ms    | Fast, non-jarring redirect when token cleared                                            |
 
 ### Platform Differences
 
-| Platform | Native Stack Behavior | Gesture |
-|---|---|---|
-| iOS | Slide from right with native parallax | Swipe right to go back |
-| Android | Slide from right, no parallax | System back button, or swipe |
-| Both | `gesture-direction: horizontal` for standard forward, `vertical` for modal | Configurable per `Stack.Screen` |
+| Platform | Native Stack Behavior                                                      | Gesture                         |
+| -------- | -------------------------------------------------------------------------- | ------------------------------- |
+| iOS      | Slide from right with native parallax                                      | Swipe right to go back          |
+| Android  | Slide from right, no parallax                                              | System back button, or swipe    |
+| Both     | `gesture-direction: horizontal` for standard forward, `vertical` for modal | Configurable per `Stack.Screen` |
 
 ---
 
@@ -137,13 +138,13 @@ Root Layout (AuthContext, TripContext)
 
 ### Expo Router Navigation Methods
 
-| Method | Usage | Adds to Stack |
-|---|---|---|
-| `router.push(href)` | Navigate forward to a new screen | ✅ Yes |
-| `router.replace(href)` | Navigate, replacing current entry (no back) | ❌ No |
-| `router.back()` | Go back to previous screen | N/A (pops stack) |
-| `router.navigate(href)` | Push if different, pop if already in stack | Depends |
-| `<Link href={...}>` | Declarative navigation (avoid in complex flows) | ✅ Yes |
+| Method                  | Usage                                           | Adds to Stack    |
+| ----------------------- | ----------------------------------------------- | ---------------- |
+| `router.push(href)`     | Navigate forward to a new screen                | ✅ Yes           |
+| `router.replace(href)`  | Navigate, replacing current entry (no back)     | ❌ No            |
+| `router.back()`         | Go back to previous screen                      | N/A (pops stack) |
+| `router.navigate(href)` | Push if different, pop if already in stack      | Depends          |
+| `<Link href={...}>`     | Declarative navigation (avoid in complex flows) | ✅ Yes           |
 
 ### Passing Data Between Screens
 
@@ -176,18 +177,19 @@ router.push({
 
 Expo Router automatically generates deep links from the file structure. The `scheme` in `app.json` is `trippath`.
 
-| Screen | Deep Link URL | Notes |
-|---|---|---|
-| Login | `trippath:///auth/login` | Rarely deep-linked to |
-| Set Locations | `trippath:///app/set-locations` | Entry point for authenticated users |
-| Trip Ready | `trippath:///app/trip-ready` | Requires context — not practically deep-linkable |
-| Route View | `trippath:///app/route-view` | Requires context — not practically deep-linkable |
+| Screen        | Deep Link URL                   | Notes                                            |
+| ------------- | ------------------------------- | ------------------------------------------------ |
+| Login         | `trippath:///auth/login`        | Rarely deep-linked to                            |
+| Set Locations | `trippath:///app/set-locations` | Entry point for authenticated users              |
+| Trip Ready    | `trippath:///app/trip-ready`    | Requires context — not practically deep-linkable |
+| Route View    | `trippath:///app/route-view`    | Requires context — not practically deep-linkable |
 
 > **v1 Note:** Deep linking is not a feature requirement for this assignment. The scheme is configured for future extensibility.
 
 ### Universal Links / App Links
 
 Not configured for v1. Production implementation would require:
+
 - **iOS:** `apple-app-site-association` file on the domain
 - **Android:** `assetlinks.json` file on the domain
 - Configuration in `app.json` under `ios.associatedDomains` and `android.intentFilters`
@@ -196,12 +198,12 @@ Not configured for v1. Production implementation would require:
 
 ## 6. Back Navigation Behavior
 
-| Screen | Android Back | iOS Swipe Back | Back Button in UI |
-|---|---|---|---|
-| **Login** | Exits app (root screen) | N/A (no back gesture on root) | None |
-| **Set Locations** | Cannot go back (auth group root) | N/A | None |
-| **Trip Ready** | Goes to Set Locations | Swipe right → Set Locations | `←` icon button (top-left) |
-| **Route View** | Goes to Trip Ready | Swipe down (modal) → Trip Ready | `←` icon button (top-left) |
+| Screen            | Android Back                     | iOS Swipe Back                  | Back Button in UI          |
+| ----------------- | -------------------------------- | ------------------------------- | -------------------------- |
+| **Login**         | Exits app (root screen)          | N/A (no back gesture on root)   | None                       |
+| **Set Locations** | Cannot go back (auth group root) | N/A                             | None                       |
+| **Trip Ready**    | Goes to Set Locations            | Swipe right → Set Locations     | `←` icon button (top-left) |
+| **Route View**    | Goes to Trip Ready               | Swipe down (modal) → Trip Ready | `←` icon button (top-left) |
 
 ### Preventing Back Navigation
 
@@ -312,4 +314,4 @@ The auth guard's `useEffect` re-fires whenever `isAuthenticated` changes, so cal
 
 ---
 
-*See `04-SCREEN-SPECS.md` for per-screen interaction details. See `02-ARCHITECTURE.md` for the overall system architecture.*
+_See `04-SCREEN-SPECS.md` for per-screen interaction details. See `02-ARCHITECTURE.md` for the overall system architecture._
