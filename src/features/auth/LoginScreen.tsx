@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import BrandMark from '../../components/BrandMark';
-import NoticeBanner from '../../components/NoticeBanner';
 import PrimaryButton from '../../components/PrimaryButton';
 import TextField from '../../components/TextField';
 import { AUTH_STRINGS } from '../../constants/strings';
@@ -59,10 +58,6 @@ export default function LoginScreen() {
 
             <Text style={styles.heading}>{AUTH_STRINGS.loginHeading}</Text>
             <Text style={styles.subtitle}>{AUTH_STRINGS.loginSubtitle}</Text>
-
-            <View style={styles.demoBanner}>
-              <NoticeBanner text={AUTH_STRINGS.demoBanner} alert />
-            </View>
 
             <View style={styles.form}>
               <TextField
@@ -156,7 +151,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
     marginBottom: 28,
   },
-  demoBanner: { marginBottom: SPACING.xl },
   form: { gap: SPACING.lg },
   forgotButton: { alignSelf: 'flex-start', marginTop: SPACING.xs, paddingVertical: 1 },
   forgotText: { color: COLORS.orange, fontFamily: FONTS.bold, fontSize: 14, lineHeight: 21 },

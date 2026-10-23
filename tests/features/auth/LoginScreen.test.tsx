@@ -16,12 +16,6 @@ const fillLogin = async (email: string, password: string) => {
   await fireEvent.changeText(screen.getByPlaceholderText('Enter your password'), password);
 };
 
-test('labels the screen as a demo up front', async () => {
-  await render(<LoginScreen />);
-  expect(screen.getByText(/Demo mode: no account is checked or created/)).toBeTruthy();
-  expect(screen.getByRole('alert')).toBeTruthy();
-});
-
 test('matches the Figma sign-up prompt', async () => {
   await render(<LoginScreen />);
   expect(screen.getByText(/New to Wayfare\?/)).toBeTruthy();

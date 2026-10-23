@@ -12,8 +12,6 @@ export const AUTH_STRINGS = {
 
   loginHeading: 'Welcome back',
   loginSubtitle: 'Log in to plan a trip and follow your route turn by turn.',
-  demoBanner:
-    'Demo mode: no account is checked or created. Any valid-looking email and password continues into the app.',
   logoLabel: 'Codenzic logo',
   emailLabel: 'Email',
   emailPlaceholder: 'you@example.com',
