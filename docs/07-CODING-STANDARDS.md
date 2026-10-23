@@ -51,32 +51,32 @@ TypeScript is configured in strict mode. The following flags are **all enabled**
 
 ### TypeScript Rules (Enforced)
 
-| Rule | Requirement |
-|---|---|
-| `any` type | **Forbidden.** Use `unknown` and narrow with type guards. |
-| Non-null assertion (`!`) | **Forbidden** except in contexts where null-safety is provably guaranteed and commented. |
-| Type casting (`as`) | Use sparingly. Prefer type guards. Never cast `unknown as Foo`. |
-| `@ts-ignore` / `@ts-expect-error` | Requires a comment explaining why, reviewed in PR. |
-| Optional chaining (`?.`) | Preferred over null checks. |
-| Nullish coalescing (`??`) | Preferred over `\|\|` for null/undefined defaults. |
-| Return types | Required on all exported functions and component props. |
-| Generic parameters | Required on `useState`, `useRef`, `useCallback`, etc. when type cannot be inferred. |
+| Rule                              | Requirement                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| `any` type                        | **Forbidden.** Use `unknown` and narrow with type guards.                                |
+| Non-null assertion (`!`)          | **Forbidden** except in contexts where null-safety is provably guaranteed and commented. |
+| Type casting (`as`)               | Use sparingly. Prefer type guards. Never cast `unknown as Foo`.                          |
+| `@ts-ignore` / `@ts-expect-error` | Requires a comment explaining why, reviewed in PR.                                       |
+| Optional chaining (`?.`)          | Preferred over null checks.                                                              |
+| Nullish coalescing (`??`)         | Preferred over `\|\|` for null/undefined defaults.                                       |
+| Return types                      | Required on all exported functions and component props.                                  |
+| Generic parameters                | Required on `useState`, `useRef`, `useCallback`, etc. when type cannot be inferred.      |
 
 ---
 
 ## 2. File Naming Conventions
 
-| Entity | Convention | Rule | Examples |
-|---|---|---|---|
-| **Screen files** (Expo Router) | `kebab-case.tsx` | File name becomes the URL segment | `login.tsx`, `set-locations.tsx`, `trip-ready.tsx`, `route-view.tsx` |
-| **Layout files** | `_layout.tsx` | Underscore prefix = Expo Router layout | `_layout.tsx` |
-| **React components** | `PascalCase.tsx` | Matches exported component name | `Button.tsx`, `LocationItem.tsx`, `TripSummaryCard.tsx` |
-| **Hooks** | `camelCase.ts` with `use` prefix | | `useAuth.ts`, `useLocation.ts`, `useTrip.ts` |
-| **Context providers** | `PascalCase.tsx` with `Context` suffix | | `AuthContext.tsx`, `TripContext.tsx` |
-| **Utility modules** | `camelCase.ts` | | `helpers.ts`, `validation.ts` |
-| **Constant files** | `camelCase.ts` | | `colors.ts`, `typography.ts`, `spacing.ts`, `mockData.ts` |
-| **Type files** | `index.ts` (barrel) | Single export point | `types/index.ts` |
-| **Test files** | `[filename].test.ts(x)` | Co-located with source | `Button.test.tsx` |
+| Entity                         | Convention                             | Rule                                   | Examples                                                             |
+| ------------------------------ | -------------------------------------- | -------------------------------------- | -------------------------------------------------------------------- |
+| **Screen files** (Expo Router) | `kebab-case.tsx`                       | File name becomes the URL segment      | `login.tsx`, `set-locations.tsx`, `trip-ready.tsx`, `route-view.tsx` |
+| **Layout files**               | `_layout.tsx`                          | Underscore prefix = Expo Router layout | `_layout.tsx`                                                        |
+| **React components**           | `PascalCase.tsx`                       | Matches exported component name        | `Button.tsx`, `LocationItem.tsx`, `TripSummaryCard.tsx`              |
+| **Hooks**                      | `camelCase.ts` with `use` prefix       |                                        | `useAuth.ts`, `useLocation.ts`, `useTrip.ts`                         |
+| **Context providers**          | `PascalCase.tsx` with `Context` suffix |                                        | `AuthContext.tsx`, `TripContext.tsx`                                 |
+| **Utility modules**            | `camelCase.ts`                         |                                        | `helpers.ts`, `validation.ts`                                        |
+| **Constant files**             | `camelCase.ts`                         |                                        | `colors.ts`, `typography.ts`, `spacing.ts`, `mockData.ts`            |
+| **Type files**                 | `index.ts` (barrel)                    | Single export point                    | `types/index.ts`                                                     |
+| **Test files**                 | `[filename].test.ts(x)`                | Co-located with source                 | `Button.test.tsx`                                                    |
 
 ---
 
@@ -146,7 +146,7 @@ const MyComponent = memo<MyComponentProps>(({ title, onPress, disabled = false, 
   // 2. Derived / memoized values
   const containerStyle = useMemo(
     () => [styles.container, disabled && styles.disabled, style],
-    [disabled, style]
+    [disabled, style],
   );
 
   // 3. Effects
@@ -168,7 +168,12 @@ const MyComponent = memo<MyComponentProps>(({ title, onPress, disabled = false, 
 
   // 6. Render
   return (
-    <Pressable style={containerStyle} onPress={handlePress} accessibilityRole="button" accessibilityLabel={title}>
+    <Pressable
+      style={containerStyle}
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+    >
       <Text style={styles.title}>{title}</Text>
     </Pressable>
   );
@@ -212,16 +217,16 @@ export type { MyComponentProps };
 
 ### Rules
 
-| Rule | Description |
-|---|---|
-| **No inline style objects** | ❌ `style={{ marginTop: 16 }}` — creates a new object every render. ✅ `style={styles.marginTop}` |
-| **Exception: dynamic styles** | ✅ `style={[styles.container, { opacity: animValue }]}` — allowed when value changes at runtime |
-| **Exception: memoized styles** | ✅ `style={useMemo(() => [styles.a, isDark && styles.dark], [isDark])}` |
-| **Semantic naming** | Style keys describe *what the element is*, not *what it looks like*. ✅ `errorContainer`, `labelText`. ❌ `redBox`, `bigFont`. |
-| **Group related styles** | Keep container, text, and icon styles adjacent. Add comments for major groups. |
-| **No magic numbers** | Every numeric value comes from `Spacing.*`, `Radius.*`, `Typography.*`, or `Colors.*`. |
-| **Platform-specific styles** | Use `Platform.select({ ios: {...}, android: {...} })` or `Platform.OS` checks. |
-| **Spread Typography** | `...Typography.Body` applies `fontSize`, `fontFamily`, `lineHeight` in one spread. |
+| Rule                           | Description                                                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **No inline style objects**    | ❌ `style={{ marginTop: 16 }}` — creates a new object every render. ✅ `style={styles.marginTop}`                              |
+| **Exception: dynamic styles**  | ✅ `style={[styles.container, { opacity: animValue }]}` — allowed when value changes at runtime                                |
+| **Exception: memoized styles** | ✅ `style={useMemo(() => [styles.a, isDark && styles.dark], [isDark])}`                                                        |
+| **Semantic naming**            | Style keys describe _what the element is_, not _what it looks like_. ✅ `errorContainer`, `labelText`. ❌ `redBox`, `bigFont`. |
+| **Group related styles**       | Keep container, text, and icon styles adjacent. Add comments for major groups.                                                 |
+| **No magic numbers**           | Every numeric value comes from `Spacing.*`, `Radius.*`, `Typography.*`, or `Colors.*`.                                         |
+| **Platform-specific styles**   | Use `Platform.select({ ios: {...}, android: {...} })` or `Platform.OS` checks.                                                 |
+| **Spread Typography**          | `...Typography.Body` applies `fontSize`, `fontFamily`, `lineHeight` in one spread.                                             |
 
 ### StyleSheet Group Template
 
@@ -254,14 +259,14 @@ const styles = StyleSheet.create({
 
 ## 5. Hook Rules
 
-| Rule | Description |
-|---|---|
-| **Prefix** | Every hook filename and export starts with `use`. |
-| **Single responsibility** | Each hook does one thing. `useLocation` handles GPS — not auth, not form state. |
-| **No hooks in hooks** | Avoid deeply nested hook calls. If a hook needs too many other hooks, it should be split. |
-| **Return objects, not arrays** | Hooks return named objects `{ value, setValue, isLoading }`, not arrays (except `useState`-mirror patterns). |
-| **Document side effects** | Every `useEffect` inside a hook has a comment explaining its trigger and intent. |
-| **No business logic in screens** | Screen files call hooks. Hooks contain the logic. |
+| Rule                             | Description                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Prefix**                       | Every hook filename and export starts with `use`.                                                            |
+| **Single responsibility**        | Each hook does one thing. `useLocation` handles GPS — not auth, not form state.                              |
+| **No hooks in hooks**            | Avoid deeply nested hook calls. If a hook needs too many other hooks, it should be split.                    |
+| **Return objects, not arrays**   | Hooks return named objects `{ value, setValue, isLoading }`, not arrays (except `useState`-mirror patterns). |
+| **Document side effects**        | Every `useEffect` inside a hook has a comment explaining its trigger and intent.                             |
+| **No business logic in screens** | Screen files call hooks. Hooks contain the logic.                                                            |
 
 ### Hook Template
 
@@ -436,17 +441,17 @@ Follow **Conventional Commits** specification: `<type>(<scope>): <description>`
 
 ### Commit Types
 
-| Type | Usage |
-|---|---|
-| `feat` | A new feature (screen, component, hook) |
-| `fix` | A bug fix |
-| `style` | UI-only changes (colors, spacing, fonts — no logic change) |
-| `refactor` | Code restructure without behavior change |
-| `docs` | Documentation only |
-| `chore` | Build, config, dependency updates |
-| `perf` | Performance improvements |
-| `test` | Tests only |
-| `revert` | Reverting a previous commit |
+| Type       | Usage                                                      |
+| ---------- | ---------------------------------------------------------- |
+| `feat`     | A new feature (screen, component, hook)                    |
+| `fix`      | A bug fix                                                  |
+| `style`    | UI-only changes (colors, spacing, fonts — no logic change) |
+| `refactor` | Code restructure without behavior change                   |
+| `docs`     | Documentation only                                         |
+| `chore`    | Build, config, dependency updates                          |
+| `perf`     | Performance improvements                                   |
+| `test`     | Tests only                                                 |
+| `revert`   | Reverting a previous commit                                |
 
 ### Scope Options
 
@@ -485,12 +490,14 @@ Examples:
 Before raising a PR, the author must verify every item:
 
 ### Correctness
+
 - [ ] Feature works as specified in `04-SCREEN-SPECS.md`
 - [ ] Edge cases from the spec are handled
 - [ ] No console errors or warnings in development build
 - [ ] TypeScript strict mode — zero errors
 
 ### Code Quality
+
 - [ ] No `any` types
 - [ ] No `TODO` or `FIXME` comments (create a GitHub issue instead)
 - [ ] No commented-out code
@@ -499,6 +506,7 @@ Before raising a PR, the author must verify every item:
 - [ ] Import order matches spec (Section 6)
 
 ### Performance
+
 - [ ] `React.memo` applied to all presentational components
 - [ ] `useCallback` on all handlers passed as props
 - [ ] `useMemo` on expensive derived values
@@ -506,12 +514,14 @@ Before raising a PR, the author must verify every item:
 - [ ] `keyExtractor` uses stable `id` field (not array index)
 
 ### UI/UX
+
 - [ ] Matches design spec (colors from `Colors.*`, spacing from `Spacing.*`)
 - [ ] Works on small (SE) screen — no content overflow
 - [ ] Works on large (Pro Max) screen — no excessive whitespace
 - [ ] Keyboard avoiding behavior tested on iOS and Android
 
 ### Accessibility
+
 - [ ] `accessibilityLabel` on all interactive elements
 - [ ] `accessibilityRole` set appropriately
 - [ ] Touch targets ≥ 44×44pt
@@ -601,4 +611,4 @@ const duration = reduceMotion ? 0 : 400;
 
 ---
 
-*This document defines the non-negotiable engineering baseline for TripPath. Deviation requires explicit team agreement.*
+_This document defines the non-negotiable engineering baseline for TripPath. Deviation requires explicit team agreement._

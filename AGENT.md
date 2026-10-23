@@ -32,14 +32,14 @@
 
 ## 1. Project Identity
 
-| Field             | Value                                             |
-|-------------------|---------------------------------------------------|
-| **App Name**      | TripPath                                          |
-| **Platform**      | iOS & Android (React Native / Expo)               |
-| **Assignment By** | Codenzic Innovations                              |
-| **Position**      | React Native Developer / Intern                   |
-| **Deadline**      | 48 hours from receipt                             |
-| **Deliverables**  | GitHub repo + Android APK + README                |
+| Field             | Value                               |
+| ----------------- | ----------------------------------- |
+| **App Name**      | TripPath                            |
+| **Platform**      | iOS & Android (React Native / Expo) |
+| **Assignment By** | Codenzic Innovations                |
+| **Position**      | React Native Developer / Intern     |
+| **Deadline**      | 48 hours from receipt               |
+| **Deliverables**  | GitHub repo + Android APK + README  |
 
 **TripPath** is a dark-themed mobile trip/route planning app. Users log in, pick a start and destination, confirm the trip, then view it on a map.
 
@@ -49,14 +49,15 @@
 
 Four required screens:
 
-| # | Screen | Key Requirements |
-|---|--------|-----------------|
-| 1 | **Login** | Email + password fields, basic validation, create account option |
-| 2 | **Set Locations** | Start + destination input, current location option, suggested/recent list |
-| 3 | **Trip Ready** | Show selected start/destination, trip metadata, proceed action |
-| 4 | **Route View** | Map with route, estimated travel time, start navigation action |
+| #   | Screen            | Key Requirements                                                          |
+| --- | ----------------- | ------------------------------------------------------------------------- |
+| 1   | **Login**         | Email + password fields, basic validation, create account option          |
+| 2   | **Set Locations** | Start + destination input, current location option, suggested/recent list |
+| 3   | **Trip Ready**    | Show selected start/destination, trip metadata, proceed action            |
+| 4   | **Route View**    | Map with route, estimated travel time, start navigation action            |
 
 **Technical expectations:**
+
 - React Native + Expo
 - Component-based, reusable architecture
 - Proper screen-to-screen navigation
@@ -102,22 +103,22 @@ Flow is **strictly linear forward**. Back navigation works at every step. Logout
 
 ## 4. Tech Stack
 
-| Category       | Technology                        | Version      | Why                                               |
-|----------------|-----------------------------------|--------------|---------------------------------------------------|
-| Framework      | React Native                      | 0.74.x       | Cross-platform mobile runtime                     |
-| Build Chain    | Expo SDK                          | ~51.0.0      | Managed workflow, EAS builds, OTA updates         |
-| Routing        | Expo Router                       | ~3.5.0       | File-based routing, type-safe links, deep linking |
-| Language       | TypeScript                        | ~5.3.0       | Type safety, better DX, strict mode               |
-| Maps           | react-native-maps                 | ~1.14.0      | Industry standard, supports dark map styles       |
-| Location       | expo-location                     | ~17.0.0      | GPS coordinates + permissions (Expo managed)      |
-| Storage        | @react-native-async-storage       | ~1.23.0      | Auth token persistence                            |
-| Forms          | react-hook-form                   | ^7.51.0      | Performant, minimal re-renders                    |
-| Validation     | zod                               | ^3.23.0      | Type-safe schema validation                       |
-| Animations     | react-native-reanimated           | ~3.10.0      | UI-thread animations, 60fps                       |
-| Gestures       | react-native-gesture-handler      | ~2.16.0      | Bottom sheet drag on Route View                   |
-| Styling        | StyleSheet (built-in)             | —            | Universal, debuggable, no setup needed            |
-| Icons          | @expo/vector-icons (Ionicons)     | built-in     | Consistent iconography, zero setup                |
-| Fonts          | expo-font                         | ~12.0.0      | Inter font loading                                |
+| Category    | Technology                    | Version  | Why                                               |
+| ----------- | ----------------------------- | -------- | ------------------------------------------------- |
+| Framework   | React Native                  | 0.74.x   | Cross-platform mobile runtime                     |
+| Build Chain | Expo SDK                      | ~51.0.0  | Managed workflow, EAS builds, OTA updates         |
+| Routing     | Expo Router                   | ~3.5.0   | File-based routing, type-safe links, deep linking |
+| Language    | TypeScript                    | ~5.3.0   | Type safety, better DX, strict mode               |
+| Maps        | react-native-maps             | ~1.14.0  | Industry standard, supports dark map styles       |
+| Location    | expo-location                 | ~17.0.0  | GPS coordinates + permissions (Expo managed)      |
+| Storage     | @react-native-async-storage   | ~1.23.0  | Auth token persistence                            |
+| Forms       | react-hook-form               | ^7.51.0  | Performant, minimal re-renders                    |
+| Validation  | zod                           | ^3.23.0  | Type-safe schema validation                       |
+| Animations  | react-native-reanimated       | ~3.10.0  | UI-thread animations, 60fps                       |
+| Gestures    | react-native-gesture-handler  | ~2.16.0  | Bottom sheet drag on Route View                   |
+| Styling     | StyleSheet (built-in)         | —        | Universal, debuggable, no setup needed            |
+| Icons       | @expo/vector-icons (Ionicons) | built-in | Consistent iconography, zero setup                |
+| Fonts       | expo-font                     | ~12.0.0  | Inter font loading                                |
 
 > **No Redux.** Context API is the correct scope for 4 screens. Redux would be over-engineering.
 
@@ -205,6 +206,7 @@ Root Layout (_layout.tsx)
 ```
 
 **Auth Guard pattern (in `app/_layout.tsx`):**
+
 ```typescript
 // On every render, check AsyncStorage for token
 // If no token → redirect to /(auth)/login
@@ -213,6 +215,7 @@ Root Layout (_layout.tsx)
 ```
 
 **Data between screens:**
+
 - Auth state → `AuthContext` (global)
 - Trip data (from, to) → `TripContext` (global, set on Set Locations screen)
 - Trip details (calculated) → `TripContext` (enriched before Trip Ready renders)
@@ -227,62 +230,73 @@ Root Layout (_layout.tsx)
 ```typescript
 export const Colors = {
   // Backgrounds
-  BgPrimary:    '#0A0E1A',   // Screen backgrounds
-  BgSurface:    '#141828',   // Cards, input fields
-  BgElevated:   '#1E2538',   // Elevated cards, modals
+  BgPrimary: '#0A0E1A', // Screen backgrounds
+  BgSurface: '#141828', // Cards, input fields
+  BgElevated: '#1E2538', // Elevated cards, modals
 
   // Accents
-  Primary:      '#4F8EF7',   // Primary buttons, active states, links
-  PrimaryLight: '#7AADFF',   // Hover / pressed states
-  Secondary:    '#FF6B6B',   // Destination pins, errors
-  Success:      '#4CAF50',   // Origin pins, success toasts
+  Primary: '#4F8EF7', // Primary buttons, active states, links
+  PrimaryLight: '#7AADFF', // Hover / pressed states
+  Secondary: '#FF6B6B', // Destination pins, errors
+  Success: '#4CAF50', // Origin pins, success toasts
 
   // Text
-  TextPrimary:  '#FFFFFF',   // Headings, main text
-  TextSecondary:'#8A9BB0',   // Labels, subtitles
-  TextMuted:    '#4A5568',   // Placeholders, disabled
+  TextPrimary: '#FFFFFF', // Headings, main text
+  TextSecondary: '#8A9BB0', // Labels, subtitles
+  TextMuted: '#4A5568', // Placeholders, disabled
 
   // Structure
-  Border:       '#2D3748',   // Input borders, card borders
-  Divider:      '#1A2033',   // List separators
+  Border: '#2D3748', // Input borders, card borders
+  Divider: '#1A2033', // List separators
 
   // Status
-  Error:        '#FF4444',
-  Warning:      '#FFAA00',
+  Error: '#FF4444',
+  Warning: '#FFAA00',
 } as const;
 ```
 
 ### Typography (`constants/typography.ts`)
 
-| Level    | Size | Weight | Line Height | Use                     |
-|----------|------|--------|-------------|-------------------------|
-| Display  | 32px | 700    | 40px        | Hero text               |
-| H1       | 28px | 700    | 36px        | Screen titles           |
-| H2       | 22px | 600    | 30px        | Section headers         |
-| H3       | 18px | 600    | 26px        | Card titles             |
-| BodyLg   | 16px | 400    | 24px        | Main content            |
-| Body     | 14px | 400    | 22px        | General text            |
-| Caption  | 12px | 400    | 18px        | Meta, timestamps        |
-| Label    | 11px | 500    | 16px        | Tags, badges            |
+| Level   | Size | Weight | Line Height | Use              |
+| ------- | ---- | ------ | ----------- | ---------------- |
+| Display | 32px | 700    | 40px        | Hero text        |
+| H1      | 28px | 700    | 36px        | Screen titles    |
+| H2      | 22px | 600    | 30px        | Section headers  |
+| H3      | 18px | 600    | 26px        | Card titles      |
+| BodyLg  | 16px | 400    | 24px        | Main content     |
+| Body    | 14px | 400    | 22px        | General text     |
+| Caption | 12px | 400    | 18px        | Meta, timestamps |
+| Label   | 11px | 500    | 16px        | Tags, badges     |
 
 ### Spacing (`constants/spacing.ts`)
 
 Base-4 grid: `4, 8, 12, 16, 20, 24, 32, 40, 48, 64`
 
 ```typescript
-export const Spacing = { xs: 4, sm: 8, md: 12, base: 16, lg: 20, xl: 24, '2xl': 32, '3xl': 40, '4xl': 48, '5xl': 64 };
-export const Radius  = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, full: 9999 };
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  base: 16,
+  lg: 20,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 40,
+  '4xl': 48,
+  '5xl': 64,
+};
+export const Radius = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, full: 9999 };
 ```
 
 ### Component Sizing
 
-| Component      | Height | Padding H |
-|----------------|--------|-----------|
-| Button (lg)    | 56px   | 24px      |
-| Button (md)    | 48px   | 20px      |
-| Button (sm)    | 36px   | 16px      |
-| Input field    | 56px   | 16px      |
-| LocationItem   | 72px   | 16px      |
+| Component    | Height | Padding H |
+| ------------ | ------ | --------- |
+| Button (lg)  | 56px   | 24px      |
+| Button (md)  | 48px   | 20px      |
+| Button (sm)  | 36px   | 16px      |
+| Input field  | 56px   | 16px      |
+| LocationItem | 72px   | 16px      |
 
 ---
 
@@ -291,6 +305,7 @@ export const Radius  = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, full: 9999 };
 ### Screen 1: Login `/(auth)/login`
 
 **Layout (top → bottom):**
+
 1. App logo + app name ("TripPath") + tagline
 2. Email `Input` component
 3. Password `Input` component (with eye toggle)
@@ -300,22 +315,28 @@ export const Radius  = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, full: 9999 };
 7. "Don't have an account? **Create Account**" link
 
 **State:**
+
 ```typescript
 { email: string, password: string, showPassword: boolean, isLoading: boolean }
 // Errors managed by react-hook-form
 ```
 
 **Validation (Zod schema):**
+
 ```typescript
 const loginSchema = z.object({
-  email:    z.string().min(1, 'Email is required').email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required').min(6, 'Password must be at least 6 characters'),
+  email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 ```
 
 **Mock auth logic:** Any email that passes validation + any password ≥6 chars → success. Store `mock-token-12345` in AsyncStorage. Navigate to `/(app)/set-locations`.
 
 **Edge cases:**
+
 - `KeyboardAvoidingView`: `behavior="padding"` on iOS, `behavior="height"` on Android
 - Disable entire form + show spinner during `isLoading`
 - Clear errors on field focus
@@ -325,6 +346,7 @@ const loginSchema = z.object({
 ### Screen 2: Set Locations `/(app)/set-locations`
 
 **Layout:**
+
 1. Screen header with back arrow + title "Plan Your Route"
 2. Location input card:
    - Row 1: Green dot + "From" input (tappable, activates 'from' field)
@@ -337,6 +359,7 @@ const loginSchema = z.object({
 6. "Set Route →" `Button` — **disabled** until both From and To are set
 
 **State (in TripContext):**
+
 ```typescript
 { fromLocation: Location | null, toLocation: Location | null }
 // Local:
@@ -344,6 +367,7 @@ const loginSchema = z.object({
 ```
 
 **Interaction rules:**
+
 - Tap "From" row → `activeInput = 'from'`; tap any suggestion → fills From
 - Tap "To" row → `activeInput = 'to'`; tap any suggestion → fills To
 - Swap button → swaps `fromLocation` ↔ `toLocation`
@@ -354,6 +378,7 @@ const loginSchema = z.object({
 ### Screen 3: Trip Ready `/(app)/trip-ready`
 
 **Layout:**
+
 1. Large illustration/icon (map pin SVG or emoji-style graphic)
 2. "Your trip is ready!" heading
 3. `TripSummaryCard`: From location name → connector → To location name
@@ -362,13 +387,12 @@ const loginSchema = z.object({
 6. "Change Locations" ghost button
 
 **Mock calculation:**
+
 ```typescript
 // In helpers.ts
-const distance = (Math.random() * 45 + 5).toFixed(1) + ' km';  // 5–50 km
-const minutes  = Math.floor(Math.random() * 105 + 15);           // 15–120 min
-const duration = minutes >= 60
-  ? `${Math.floor(minutes/60)}h ${minutes%60}m`
-  : `${minutes} min`;
+const distance = (Math.random() * 45 + 5).toFixed(1) + ' km'; // 5–50 km
+const minutes = Math.floor(Math.random() * 105 + 15); // 15–120 min
+const duration = minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes} min`;
 ```
 
 **Animation:** Card slides up from bottom with `react-native-reanimated` on mount. Metadata rows show shimmer for 1.2s then reveal values.
@@ -378,6 +402,7 @@ const duration = minutes >= 60
 ### Screen 4: Route View `/(app)/route-view`
 
 **Layout:**
+
 1. Full-screen `MapView` (dark style, fills entire screen)
 2. Floating header overlay (top): Back button + "TripPath Route" title
 3. Two `Marker` components: green (origin) + red (destination)
@@ -388,12 +413,13 @@ const duration = minutes >= 60
    - "🧭 Start Navigation" primary button
 
 **Map configuration:**
+
 ```typescript
 // Center camera between both coordinates
 const region = {
-  latitude:       (from.lat + to.lat) / 2,
-  longitude:      (from.lng + to.lng) / 2,
-  latitudeDelta:  Math.abs(from.lat - to.lat) * 1.5 + 0.02,
+  latitude: (from.lat + to.lat) / 2,
+  longitude: (from.lng + to.lng) / 2,
+  latitudeDelta: Math.abs(from.lat - to.lat) * 1.5 + 0.02,
   longitudeDelta: Math.abs(from.lng - to.lng) * 1.5 + 0.02,
 };
 // Apply dark map style JSON (see docs/03-DESIGN-SYSTEM.md for full JSON)
@@ -409,16 +435,16 @@ const region = {
 
 ```typescript
 interface ButtonProps {
-  title:     string;
-  onPress:   () => void;
-  variant?:  'primary' | 'secondary' | 'ghost' | 'danger';  // default: 'primary'
-  size?:     'sm' | 'md' | 'lg';                             // default: 'md'
+  title: string;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'; // default: 'primary'
+  size?: 'sm' | 'md' | 'lg'; // default: 'md'
   disabled?: boolean;
-  loading?:  boolean;
+  loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  style?:    StyleProp<ViewStyle>;
-  fullWidth?: boolean;  // default: false
+  style?: StyleProp<ViewStyle>;
+  fullWidth?: boolean; // default: false
 }
 ```
 
@@ -430,18 +456,18 @@ interface ButtonProps {
 
 ```typescript
 interface InputProps {
-  label?:            string;
-  placeholder?:      string;
-  value:             string;
-  onChangeText:      (text: string) => void;
-  error?:            string;
-  secureTextEntry?:  boolean;
-  showToggle?:       boolean;           // show eye icon for password
-  rightIcon?:        React.ReactNode;
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  error?: string;
+  secureTextEntry?: boolean;
+  showToggle?: boolean; // show eye icon for password
+  rightIcon?: React.ReactNode;
   onRightIconPress?: () => void;
-  keyboardType?:     KeyboardTypeOptions;
-  autoCapitalize?:   'none' | 'sentences' | 'words' | 'characters';
-  editable?:         boolean;
+  keyboardType?: KeyboardTypeOptions;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  editable?: boolean;
 }
 ```
 
@@ -453,8 +479,8 @@ interface InputProps {
 ```typescript
 interface LocationItemProps {
   location: Location;
-  onPress:  (location: Location) => void;
-  type?:    'recent' | 'popular' | 'current';
+  onPress: (location: Location) => void;
+  type?: 'recent' | 'popular' | 'current';
 }
 // Icon: clock (recent) | star (popular) | navigation (current)
 ```
@@ -464,7 +490,7 @@ interface LocationItemProps {
 ```typescript
 interface TripSummaryCardProps {
   from: Location;
-  to:   Location;
+  to: Location;
 }
 // Renders: green dot → vertical line → red dot, with names and addresses
 ```
@@ -477,40 +503,40 @@ All types live in `types/index.ts`:
 
 ```typescript
 interface User {
-  id:    string;
+  id: string;
   email: string;
-  name:  string;
+  name: string;
 }
 
 interface AuthState {
-  user:            User | null;
-  token:           string | null;
+  user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
-  isLoading:       boolean;
+  isLoading: boolean;
 }
 
 interface Location {
-  id:          string;
-  name:        string;
-  address:     string;
+  id: string;
+  name: string;
+  address: string;
   coordinates: { latitude: number; longitude: number };
-  type:        'recent' | 'popular' | 'current' | 'custom';
-  distance?:   string;
+  type: 'recent' | 'popular' | 'current' | 'custom';
+  distance?: string;
 }
 
 interface Trip {
-  id:                string;
-  from:              Location;
-  to:                Location;
-  distance:          string;          // e.g. "12.4 km"
-  estimatedDuration: string;          // e.g. "24 min"
-  travelMode:        'car' | 'walk' | 'transit';
-  routeCoordinates:  Coordinate[];
-  createdAt:         Date;
+  id: string;
+  from: Location;
+  to: Location;
+  distance: string; // e.g. "12.4 km"
+  estimatedDuration: string; // e.g. "24 min"
+  travelMode: 'car' | 'walk' | 'transit';
+  routeCoordinates: Coordinate[];
+  createdAt: Date;
 }
 
 interface Coordinate {
-  latitude:  number;
+  latitude: number;
   longitude: number;
 }
 ```
@@ -522,30 +548,33 @@ interface Coordinate {
 Two contexts only:
 
 ### `AuthContext`
+
 ```typescript
 interface AuthContextType {
-  user:            User | null;
+  user: User | null;
   isAuthenticated: boolean;
-  isLoading:       boolean;
-  login:           (email: string, password: string) => Promise<void>;
-  logout:          () => Promise<void>;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 ```
+
 - On `login()` → validate → store `mock-token-12345` in AsyncStorage → set user
 - On `logout()` → clear AsyncStorage → reset user → `router.replace('/(auth)/login')`
 - On app start → read AsyncStorage → hydrate (prevents flash of login screen)
 
 ### `TripContext`
+
 ```typescript
 interface TripContextType {
-  fromLocation:    Location | null;
-  toLocation:      Location | null;
-  activeTrip:      Trip | null;
+  fromLocation: Location | null;
+  toLocation: Location | null;
+  activeTrip: Trip | null;
   setFromLocation: (location: Location | null) => void;
-  setToLocation:   (location: Location | null) => void;
-  setActiveTrip:   (trip: Trip) => void;
-  swapLocations:   () => void;
-  clearTrip:       () => void;
+  setToLocation: (location: Location | null) => void;
+  setActiveTrip: (trip: Trip) => void;
+  swapLocations: () => void;
+  clearTrip: () => void;
 }
 ```
 
@@ -554,22 +583,25 @@ interface TripContextType {
 ## 12. Coding Standards
 
 ### TypeScript
+
 - `strict: true` in `tsconfig.json` — non-negotiable
 - Zero `any` types. Use `unknown` + type guard if truly unknown
 - All component props have explicit interfaces (not inline types)
 - All async functions have explicit return types
 
 ### File Naming
-| Type         | Convention  | Example                  |
-|--------------|-------------|--------------------------|
-| Components   | PascalCase  | `LocationItem.tsx`       |
-| Screens      | kebab-case  | `set-locations.tsx`      |
-| Hooks        | camelCase   | `useLocation.ts`         |
-| Utils        | camelCase   | `helpers.ts`             |
-| Constants    | camelCase   | `colors.ts`              |
-| Types        | camelCase   | `index.ts`               |
+
+| Type       | Convention | Example             |
+| ---------- | ---------- | ------------------- |
+| Components | PascalCase | `LocationItem.tsx`  |
+| Screens    | kebab-case | `set-locations.tsx` |
+| Hooks      | camelCase  | `useLocation.ts`    |
+| Utils      | camelCase  | `helpers.ts`        |
+| Constants  | camelCase  | `colors.ts`         |
+| Types      | camelCase  | `index.ts`          |
 
 ### Import Order (enforce via ESLint)
+
 ```typescript
 // 1. React
 import React, { useState, useCallback } from 'react';
@@ -598,17 +630,20 @@ import type { Location } from '@/types';
 ```
 
 ### StyleSheet Rules
+
 - **No inline styles** except dynamic values (e.g., `{ width: progress + '%' }`)
 - Name styles semantically: `container`, `header`, `title`, `inputRow`, not `view1`, `text2`
 - Group related styles together
 - `StyleSheet.create()` always at the **bottom** of the file
 
 ### Component Size Limits
+
 - Max **150 lines** per component (excluding StyleSheet block)
 - Max **40 lines** per function
 - Split into sub-components early rather than late
 
 ### Commit Convention (Conventional Commits)
+
 ```
 feat(login): add password visibility toggle
 fix(locations): correct swap button not updating TripContext
@@ -619,6 +654,7 @@ chore(deps): upgrade expo-location to 17.0.1
 ```
 
 ### Performance Rules
+
 - `React.memo` on every presentational component
 - `useCallback` on all handlers passed as props
 - `useMemo` on filtered/derived data
@@ -631,6 +667,7 @@ chore(deps): upgrade expo-location to 17.0.1
 ## 13. Dependencies
 
 ### Install Command
+
 ```bash
 npx create-expo-app codenzic-trip-planner --template blank-typescript
 cd codenzic-trip-planner
@@ -641,38 +678,40 @@ npm install react-hook-form zod
 ```
 
 ### Full `package.json` dependencies
+
 ```json
 {
   "dependencies": {
-    "expo":                                    "~51.0.0",
-    "expo-router":                             "~3.5.0",
-    "expo-location":                           "~17.0.0",
-    "expo-font":                               "~12.0.0",
-    "expo-status-bar":                         "~1.12.0",
-    "expo-splash-screen":                      "~0.27.0",
-    "react":                                   "18.2.0",
-    "react-native":                            "0.74.5",
-    "react-native-maps":                       "~1.14.0",
-    "react-native-reanimated":                 "~3.10.0",
-    "react-native-gesture-handler":            "~2.16.0",
-    "react-native-safe-area-context":          "4.10.5",
-    "react-native-screens":                    "3.31.1",
+    "expo": "~51.0.0",
+    "expo-router": "~3.5.0",
+    "expo-location": "~17.0.0",
+    "expo-font": "~12.0.0",
+    "expo-status-bar": "~1.12.0",
+    "expo-splash-screen": "~0.27.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-maps": "~1.14.0",
+    "react-native-reanimated": "~3.10.0",
+    "react-native-gesture-handler": "~2.16.0",
+    "react-native-safe-area-context": "4.10.5",
+    "react-native-screens": "3.31.1",
     "@react-native-async-storage/async-storage": "~1.23.0",
-    "react-hook-form":                         "^7.51.0",
-    "zod":                                     "^3.23.0",
-    "@expo/vector-icons":                      "^14.0.0"
+    "react-hook-form": "^7.51.0",
+    "zod": "^3.23.0",
+    "@expo/vector-icons": "^14.0.0"
   },
   "devDependencies": {
-    "@types/react":     "~18.2.0",
-    "typescript":       "~5.3.0",
-    "eslint":           "^8.57.0",
+    "@types/react": "~18.2.0",
+    "typescript": "~5.3.0",
+    "eslint": "^8.57.0",
     "eslint-config-expo": "~7.0.0",
-    "prettier":         "^3.2.0"
+    "prettier": "^3.2.0"
   }
 }
 ```
 
 ### `app.json` — Key Settings
+
 ```json
 {
   "expo": {
@@ -685,7 +724,10 @@ npm install react-hook-form zod
       ["react-native-maps", { "googleMapsApiKey": "YOUR_API_KEY" }]
     ],
     "android": {
-      "adaptiveIcon": { "foregroundImage": "./assets/images/adaptive-icon.png", "backgroundColor": "#0A0E1A" },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0A0E1A"
+      },
       "config": { "googleMaps": { "apiKey": "YOUR_API_KEY" } }
     }
   }
@@ -693,6 +735,7 @@ npm install react-hook-form zod
 ```
 
 ### `eas.json` — Build Profiles
+
 ```json
 {
   "cli": { "version": ">= 10.0.0" },
@@ -719,41 +762,61 @@ npm install react-hook-form zod
 All mock data lives in `constants/mockData.ts`. **Never hardcode values directly in screen files.**
 
 ### Mock Locations (6 entries)
+
 ```typescript
 export const MOCK_LOCATIONS: Location[] = [
   {
-    id: 'loc-1', name: 'Central Park', address: 'New York, NY 10024, USA',
-    coordinates: { latitude: 40.7851, longitude: -73.9683 }, type: 'popular',
+    id: 'loc-1',
+    name: 'Central Park',
+    address: 'New York, NY 10024, USA',
+    coordinates: { latitude: 40.7851, longitude: -73.9683 },
+    type: 'popular',
   },
   {
-    id: 'loc-2', name: 'Brooklyn Bridge', address: 'Brooklyn, NY 11201, USA',
-    coordinates: { latitude: 40.7061, longitude: -73.9969 }, type: 'recent',
+    id: 'loc-2',
+    name: 'Brooklyn Bridge',
+    address: 'Brooklyn, NY 11201, USA',
+    coordinates: { latitude: 40.7061, longitude: -73.9969 },
+    type: 'recent',
   },
   {
-    id: 'loc-3', name: 'Times Square', address: 'Manhattan, NY 10036, USA',
-    coordinates: { latitude: 40.7580, longitude: -73.9855 }, type: 'recent',
+    id: 'loc-3',
+    name: 'Times Square',
+    address: 'Manhattan, NY 10036, USA',
+    coordinates: { latitude: 40.758, longitude: -73.9855 },
+    type: 'recent',
   },
   {
-    id: 'loc-4', name: 'Statue of Liberty', address: 'Liberty Island, NY 10004, USA',
-    coordinates: { latitude: 40.6892, longitude: -74.0445 }, type: 'popular',
+    id: 'loc-4',
+    name: 'Statue of Liberty',
+    address: 'Liberty Island, NY 10004, USA',
+    coordinates: { latitude: 40.6892, longitude: -74.0445 },
+    type: 'popular',
   },
   {
-    id: 'loc-5', name: 'Empire State Building', address: '20 W 34th St, New York, NY 10001',
-    coordinates: { latitude: 40.7484, longitude: -73.9856 }, type: 'popular',
+    id: 'loc-5',
+    name: 'Empire State Building',
+    address: '20 W 34th St, New York, NY 10001',
+    coordinates: { latitude: 40.7484, longitude: -73.9856 },
+    type: 'popular',
   },
   {
-    id: 'loc-6', name: 'Grand Central Terminal', address: '89 E 42nd St, New York, NY 10017',
-    coordinates: { latitude: 40.7527, longitude: -73.9772 }, type: 'recent',
+    id: 'loc-6',
+    name: 'Grand Central Terminal',
+    address: '89 E 42nd St, New York, NY 10017',
+    coordinates: { latitude: 40.7527, longitude: -73.9772 },
+    type: 'recent',
   },
 ];
 ```
 
 ### Mock Route Generation
+
 ```typescript
 export function generateMockRoute(from: Coordinate, to: Coordinate): Coordinate[] {
   const steps = 8;
   return Array.from({ length: steps }, (_, i) => ({
-    latitude:  from.latitude  + (to.latitude  - from.latitude)  * (i / (steps - 1)),
+    latitude: from.latitude + (to.latitude - from.latitude) * (i / (steps - 1)),
     longitude: from.longitude + (to.longitude - from.longitude) * (i / (steps - 1)),
   }));
 }
@@ -764,6 +827,7 @@ export function generateMockRoute(from: Coordinate, to: Coordinate): Coordinate[
 ## 15. Build & APK Generation
 
 ### Development
+
 ```bash
 npm install
 npx expo start
@@ -771,6 +835,7 @@ npx expo start
 ```
 
 ### Generate APK (via EAS)
+
 ```bash
 npm install -g eas-cli
 eas login                                           # Log in to Expo account
@@ -781,13 +846,13 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 
 ### Common Build Issues
 
-| Issue | Fix |
-|-------|-----|
-| `react-native-maps` not working in Expo Go | Use development build or mock map on Expo Go |
-| Google Maps API key error | Add key to `app.json` android config |
-| `expo-location` permission denied | Test on physical device, not emulator |
-| Font not loading | Check `useFonts` hook in root `_layout.tsx` |
-| Reanimated worklet error | Add `react-native-reanimated/plugin` to `babel.config.js` |
+| Issue                                      | Fix                                                       |
+| ------------------------------------------ | --------------------------------------------------------- |
+| `react-native-maps` not working in Expo Go | Use development build or mock map on Expo Go              |
+| Google Maps API key error                  | Add key to `app.json` android config                      |
+| `expo-location` permission denied          | Test on physical device, not emulator                     |
+| Font not loading                           | Check `useFonts` hook in root `_layout.tsx`               |
+| Reanimated worklet error                   | Add `react-native-reanimated/plugin` to `babel.config.js` |
 
 ---
 
@@ -796,6 +861,7 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 ### Per-Screen Manual Tests
 
 **Login:**
+
 - [ ] Empty submit shows both field errors
 - [ ] Invalid email format shows error
 - [ ] Password < 6 chars shows error
@@ -806,6 +872,7 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 - [ ] Works on small screen (iPhone SE size) — no content cut off
 
 **Set Locations:**
+
 - [ ] Tapping From/To row activates correct input
 - [ ] Tapping suggestion fills active input field
 - [ ] Swap button swaps both locations
@@ -815,12 +882,14 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 - [ ] FlatList scrollable with 6+ items
 
 **Trip Ready:**
+
 - [ ] Correct From and To names shown
 - [ ] Distance and duration values appear after shimmer
 - [ ] "View Route" → navigates to Route View
 - [ ] "Change Locations" → goes back to Set Locations
 
 **Route View:**
+
 - [ ] Map renders with dark style
 - [ ] Two markers visible (green + red)
 - [ ] Polyline connects markers
@@ -829,12 +898,13 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 - [ ] "Start Navigation" shows alert/toast
 
 ### Responsive Testing
-| Device           | Screen Size | Must Pass |
-|------------------|-------------|-----------|
-| iPhone SE 3rd    | 375×667     | No overflow, all elements visible |
-| iPhone 14        | 390×844     | Balanced layout |
-| iPhone 14 Pro Max| 430×932     | No excessive whitespace |
-| Galaxy S21       | 360×800     | Same as SE constraints |
+
+| Device            | Screen Size | Must Pass                         |
+| ----------------- | ----------- | --------------------------------- |
+| iPhone SE 3rd     | 375×667     | No overflow, all elements visible |
+| iPhone 14         | 390×844     | Balanced layout                   |
+| iPhone 14 Pro Max | 430×932     | No excessive whitespace           |
+| Galaxy S21        | 360×800     | Same as SE constraints            |
 
 ---
 
@@ -865,20 +935,20 @@ eas build --platform android --profile preview      # Builds APK (~10-15 min)
 
 All detailed documentation is in the `docs/` folder:
 
-| File | Contents |
-|------|----------|
-| [`docs/01-PROJECT-OVERVIEW.md`](./docs/01-PROJECT-OVERVIEW.md) | Full project context, goals, timeline |
-| [`docs/02-ARCHITECTURE.md`](./docs/02-ARCHITECTURE.md) | Folder structure, data flow diagrams |
-| [`docs/03-DESIGN-SYSTEM.md`](./docs/03-DESIGN-SYSTEM.md) | Full color palette, typography, spacing, dark map style |
-| [`docs/04-SCREEN-SPECS.md`](./docs/04-SCREEN-SPECS.md) | Per-screen layout, state, validation, edge cases |
-| [`docs/05-COMPONENT-GUIDE.md`](./docs/05-COMPONENT-GUIDE.md) | Every component's props, variants, behavior |
-| [`docs/06-DATA-MODELS.md`](./docs/06-DATA-MODELS.md) | All TypeScript interfaces, mock data, utility functions |
+| File                                                           | Contents                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------- |
+| [`docs/01-PROJECT-OVERVIEW.md`](./docs/01-PROJECT-OVERVIEW.md) | Full project context, goals, timeline                   |
+| [`docs/02-ARCHITECTURE.md`](./docs/02-ARCHITECTURE.md)         | Folder structure, data flow diagrams                    |
+| [`docs/03-DESIGN-SYSTEM.md`](./docs/03-DESIGN-SYSTEM.md)       | Full color palette, typography, spacing, dark map style |
+| [`docs/04-SCREEN-SPECS.md`](./docs/04-SCREEN-SPECS.md)         | Per-screen layout, state, validation, edge cases        |
+| [`docs/05-COMPONENT-GUIDE.md`](./docs/05-COMPONENT-GUIDE.md)   | Every component's props, variants, behavior             |
+| [`docs/06-DATA-MODELS.md`](./docs/06-DATA-MODELS.md)           | All TypeScript interfaces, mock data, utility functions |
 | [`docs/07-CODING-STANDARDS.md`](./docs/07-CODING-STANDARDS.md) | Conventions, ESLint, Prettier, commit style, perf rules |
-| [`docs/08-DEPENDENCIES.md`](./docs/08-DEPENDENCIES.md) | All packages, versions, full configs |
-| [`docs/09-NAVIGATION-FLOW.md`](./docs/09-NAVIGATION-FLOW.md) | Transitions, auth guard, deep links |
-| [`docs/10-TESTING-AND-QA.md`](./docs/10-TESTING-AND-QA.md) | QA checklists, accessibility, responsive matrix |
-| [`docs/11-BUILD-AND-DEPLOY.md`](./docs/11-BUILD-AND-DEPLOY.md) | EAS Build, APK steps, troubleshooting |
+| [`docs/08-DEPENDENCIES.md`](./docs/08-DEPENDENCIES.md)         | All packages, versions, full configs                    |
+| [`docs/09-NAVIGATION-FLOW.md`](./docs/09-NAVIGATION-FLOW.md)   | Transitions, auth guard, deep links                     |
+| [`docs/10-TESTING-AND-QA.md`](./docs/10-TESTING-AND-QA.md)     | QA checklists, accessibility, responsive matrix         |
+| [`docs/11-BUILD-AND-DEPLOY.md`](./docs/11-BUILD-AND-DEPLOY.md) | EAS Build, APK steps, troubleshooting                   |
 
 ---
 
-*Last updated: October 2026 — Planning phase complete. Ready for implementation.*
+_Last updated: October 2026 — Planning phase complete. Ready for implementation._
