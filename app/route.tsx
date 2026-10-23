@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Alert,
-  Platform,
+  Linking,
   Pressable,
   ScrollView,
   StatusBar,
@@ -11,23 +11,33 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE, Region } from 'react-native-maps';
-import { ArrowLeft, Navigation, CarFront, Bike, Footprints } from 'lucide-react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import RouteMap, { MapRegion } from '../components/RouteMap';
+import {
+  ArrowUp,
+  ChevronLeft,
+  CornerUpLeft,
+  CornerUpRight,
+  Layers,
+  Merge,
+  Navigation,
+  RotateCw,
+  Ship,
+  TriangleAlert,
+} from 'lucide-react-native';
+import { COLORS, FONTS, RADIUS } from '../constants/theme';
 
-const COLORS = {
-  white: '#FFFFFF',
-  text: '#172533',
-  muted: '#8090A2',
-  border: '#E7EBEF',
-  orange: '#F1521F',
-  paleOrange: '#FFF0EA',
-  errorBg: '#FDF2F2',
-  errorText: '#C81E1E',
-};
 type TravelMode = 'DRIVE' | 'TWO_WHEELER' | 'WALK';
 type Coordinate = { latitude: number; longitude: number };
+type Step = { title: string; subtitle?: string; distanceMeters?: number; maneuver?: string };
 const ROUTES_KEY = process.env.EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY;
+const MAX_STEPS = 20;
+
+const MODES: { key: TravelMode; label: string }[] = [
+  { key: 'DRIVE', label: 'Drive' },
+  { key: 'TWO_WHEELER', label: 'Ride' },
+  { key: 'WALK', label: 'Walk' },
+];
 
 function decodePolyline(encoded: string): Coordinate[] {
   const points: Coordinate[] = [];
@@ -57,8 +67,36 @@ function decodePolyline(encoded: string): Coordinate[] {
   return points;
 }
 
+function formatDistance(meters: number) {
+  return meters < 1000 ? Math.round(meters) + ' m' : (meters / 1000).toFixed(1) + ' km';
+}
+
+function formatDuration(seconds: number) {
+  return seconds < 3600
+    ? Math.max(1, Math.round(seconds / 60)) + ' min'
+    : Math.floor(seconds / 3600) + ' hr ' + Math.round((seconds % 3600) / 60) + ' min';
+}
+
+function formatArrival(seconds: number) {
+  const arrival = new Date(Date.now() + seconds * 1000);
+  const hours = String(arrival.getHours()).padStart(2, '0');
+  const minutes = String(arrival.getMinutes()).padStart(2, '0');
+  return hours + ':' + minutes;
+}
+
+function maneuverIcon(maneuver?: string) {
+  if (!maneuver) return ArrowUp;
+  if (maneuver.startsWith('ROUNDABOUT') || maneuver.startsWith('UTURN')) return RotateCw;
+  if (maneuver.includes('LEFT')) return CornerUpLeft;
+  if (maneuver.includes('RIGHT')) return CornerUpRight;
+  if (maneuver === 'MERGE') return Merge;
+  if (maneuver === 'FERRY' || maneuver === 'FERRY_TRAIN') return Ship;
+  return ArrowUp;
+}
+
 export default function RouteScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     pickup?: string;
     dropoff?: string;
@@ -87,21 +125,14 @@ export default function RouteScreen() {
   const [route, setRoute] = useState<Coordinate[]>([]);
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
-  const [steps, setSteps] = useState<string[]>([]);
+  const [arrival, setArrival] = useState('');
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [message, setMessage] = useState('');
+  const [traffic, setTraffic] = useState('');
   const [loading, setLoading] = useState(false);
-  const [mapReady, setMapReady] = useState(false);
-  const mapRef = useRef<MapView>(null);
+  const [satellite, setSatellite] = useState(false);
 
-  useEffect(() => {
-    if (mapReady && mapRef.current && route.length > 1) {
-      mapRef.current.fitToCoordinates(route, {
-        edgePadding: { top: 70, right: 70, bottom: 70, left: 70 },
-        animated: true,
-      });
-    }
-  }, [mapReady, route]);
-
-  const region: Region = useMemo(
+  const region: MapRegion = useMemo(
     () => ({
       latitude: (start.latitude + end.latitude) / 2,
       longitude: (start.longitude + end.longitude) / 2,
@@ -113,17 +144,25 @@ export default function RouteScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    function showError(text: string, durationText: string) {
+      setRoute([]);
+      setDistance('Route unavailable');
+      setDuration(durationText);
+      setArrival('');
+      setTraffic('');
+      setSteps([]);
+      setMessage(text);
+    }
     async function fetchRoute() {
       if (!ROUTES_KEY || !params.pickupLat || !params.dropoffLat) {
-        setRoute([]);
-        setDistance('Route unavailable');
-        setDuration('Configuration required');
-        setSteps([
+        showError(
           'Add EXPO_PUBLIC_GOOGLE_ROUTES_API_KEY to calculate road routes and travel time.',
-        ]);
+          'Configuration required',
+        );
         return;
       }
       setLoading(true);
+      setMessage('');
       try {
         const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
           method: 'POST',
@@ -131,7 +170,7 @@ export default function RouteScreen() {
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': ROUTES_KEY,
             'X-Goog-FieldMask':
-              'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs.steps.navigationInstruction.instructions',
+              'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs.steps.distanceMeters,routes.legs.steps.navigationInstruction,routes.travelAdvisory.speedReadingIntervals',
           },
           body: JSON.stringify({
             origin: {
@@ -142,6 +181,7 @@ export default function RouteScreen() {
             },
             travelMode: mode,
             routingPreference: mode === 'DRIVE' ? 'TRAFFIC_AWARE' : 'TRAFFIC_UNAWARE',
+            extraComputations: mode === 'DRIVE' ? ['TRAFFIC_ON_POLYLINE'] : undefined,
             computeAlternativeRoutes: false,
             languageCode: 'en',
             units: 'METRIC',
@@ -162,26 +202,45 @@ export default function RouteScreen() {
         }
         const first = data.routes[0];
         if (cancelled) return;
-        setRoute(decodePolyline(first.polyline.encodedPolyline));
-        setDistance((first.distanceMeters / 1000).toFixed(1) + ' km');
         const seconds = Number.parseInt(first.duration ?? '0s', 10);
-        setDuration(
-          seconds < 3600
-            ? Math.max(1, Math.round(seconds / 60)) + ' min'
-            : Math.floor(seconds / 3600) + ' hr ' + Math.round((seconds % 3600) / 60) + ' min',
+        setRoute(decodePolyline(first.polyline.encodedPolyline));
+        setDistance(formatDistance(first.distanceMeters));
+        setDuration(formatDuration(seconds));
+        setArrival(formatArrival(seconds));
+
+        const speeds: string[] = (first.travelAdvisory?.speedReadingIntervals ?? []).map(
+          (interval: any) => interval.speed,
         );
+        setTraffic(
+          speeds.includes('TRAFFIC_JAM')
+            ? 'Heavy traffic on your route'
+            : speeds.includes('SLOW')
+              ? 'Moderate traffic on your route'
+              : '',
+        );
+
         setSteps(
           (first.legs?.[0]?.steps ?? [])
-            .map((step: any) => step.navigationInstruction?.instructions)
-            .filter(Boolean)
-            .slice(0, 8),
+            .map((step: any) => {
+              const [title, ...rest] = String(step.navigationInstruction?.instructions ?? '').split(
+                '\n',
+              );
+              return {
+                title: (title ?? '').trim(),
+                subtitle: rest.join(' ').trim() || undefined,
+                distanceMeters: step.distanceMeters,
+                maneuver: step.navigationInstruction?.maneuver,
+              } as Step;
+            })
+            .filter((step: Step) => step.title)
+            .slice(0, MAX_STEPS),
         );
       } catch (error) {
         if (!cancelled) {
-          setRoute([]);
-          setDistance('Route unavailable');
-          setDuration('API setup required');
-          setSteps([error instanceof Error ? error.message : 'Could not calculate a route.']);
+          showError(
+            error instanceof Error ? error.message : 'Could not calculate a route.',
+            'API setup required',
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -210,89 +269,82 @@ export default function RouteScreen() {
             end.longitude +
             '&travelmode=' +
             (mode === 'WALK' ? 'walking' : mode === 'TWO_WHEELER' ? 'bicycling' : 'driving');
-          import('react-native').then(({ Linking }) => Linking.openURL(url));
+          Linking.openURL(url);
         },
       },
     ]);
   };
 
+  const unavailable = loading || route.length < 2;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
-        {Platform.OS === 'web' ? (
-          <View style={styles.webFallback}>
-            <Text style={styles.webFallbackTitle}>Interactive Map</Text>
-            <Text style={styles.webFallbackSub}>
-              Native maps render on mobile (Android/iOS). Use an Android device or emulator to test.
-            </Text>
-          </View>
-        ) : (
-          <MapView
-            ref={mapRef}
-            style={StyleSheet.absoluteFill}
-            provider={PROVIDER_GOOGLE}
-            initialRegion={region}
-            onMapReady={() => setMapReady(true)}
-            toolbarEnabled={false}
-            pitchEnabled={false}
-            rotateEnabled={false}
-            showsUserLocation={false}
-            showsMyLocationButton={false}
-          >
-            <Marker
-              coordinate={start}
-              title="Pickup"
-              description={pickup}
-              pinColor={COLORS.orange}
-            />
-            <Marker coordinate={end} title="Destination" description={dropoff} />
-            {route.length > 1 ? (
-              <Polyline
-                coordinates={route}
-                strokeColor={COLORS.orange}
-                strokeWidth={5}
-                lineCap="round"
-                lineJoin="round"
-              />
-            ) : null}
-          </MapView>
-        )}
+        <View style={styles.mapArea}>
+          <RouteMap
+            start={start}
+            pickup={pickup}
+            end={end}
+            dropoff={dropoff}
+            route={route}
+            region={region}
+            satellite={satellite}
+          />
+          {traffic ? (
+            <View style={styles.trafficBanner}>
+              <TriangleAlert size={16} color={COLORS.white} />
+              <Text style={styles.trafficText}>{traffic}</Text>
+            </View>
+          ) : null}
+        </View>
 
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Go back to locations"
           onPress={() => router.back()}
-          style={styles.mapBack}
+          style={styles.mapButton}
         >
-          <ArrowLeft size={21} color={COLORS.text} />
+          <ChevronLeft size={24} color={COLORS.text} />
         </Pressable>
 
-        {!mapReady && Platform.OS !== 'web' ? (
-          <View style={styles.mapLoading}>
-            <ActivityIndicator color={COLORS.orange} />
-          </View>
-        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Toggle map layers"
+          onPress={() => setSatellite((value) => !value)}
+          style={[styles.mapButton, styles.mapLayers]}
+        >
+          <Layers size={20} color={COLORS.text} />
+        </Pressable>
 
-        <View style={styles.bottomSheet}>
+        <View style={[styles.bottomSheet, { paddingBottom: 16 + insets.bottom }]}>
           <View style={styles.handle} />
           <View style={styles.summaryHeader}>
-            <View>
-              <Text style={styles.eyebrow}>ROUTE SUMMARY</Text>
-              <Text style={styles.duration}>{loading ? 'Calculating…' : duration || '—'}</Text>
+            <View style={styles.summaryMain}>
+              <Text style={styles.eyebrow}>Fastest route</Text>
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.5}
+                style={styles.duration}
+              >
+                {loading ? 'Calculating…' : duration || '—'}
+              </Text>
             </View>
-            <Text style={styles.distance}>{distance || '—'}</Text>
+            <Text style={styles.distance}>
+              {distance || '—'}
+              {arrival ? (
+                <>
+                  <Text style={styles.distanceDot}> · </Text>
+                  {'arrive '}
+                  {arrival}
+                </>
+              ) : null}
+            </Text>
           </View>
           <View style={styles.modeRow}>
-            {(
-              [
-                { key: 'DRIVE', label: 'Drive', icon: CarFront },
-                { key: 'TWO_WHEELER', label: 'Ride', icon: Bike },
-                { key: 'WALK', label: 'Walk', icon: Footprints },
-              ] as const
-            ).map((item) => {
+            {MODES.map((item) => {
               const active = mode === item.key;
-              const Icon = item.icon;
               return (
                 <Pressable
                   key={item.key}
@@ -301,7 +353,6 @@ export default function RouteScreen() {
                   onPress={() => setMode(item.key)}
                   style={[styles.modeButton, active && styles.modeButtonActive]}
                 >
-                  <Icon size={15} color={active ? COLORS.orange : COLORS.text} />
                   <Text style={[styles.modeText, active && styles.modeTextActive]}>
                     {item.label}
                   </Text>
@@ -316,15 +367,15 @@ export default function RouteScreen() {
               <View style={styles.endDot} />
             </View>
             <View style={styles.placeLabels}>
-              <Text numberOfLines={2} style={styles.placeText}>
+              <Text numberOfLines={1} style={styles.placeText}>
                 {pickup}
               </Text>
-              <Text numberOfLines={2} style={styles.placeText}>
+              <Text numberOfLines={1} style={styles.placeText}>
                 {dropoff}
               </Text>
             </View>
           </View>
-          <Text style={styles.sectionLabel}>DIRECTIONS & STATUS</Text>
+          <Text style={styles.sectionLabel}>Turn by turn</Text>
           <View style={styles.stepsContainer}>
             {loading ? (
               <ActivityIndicator color={COLORS.orange} style={{ marginTop: 12 }} />
@@ -332,27 +383,44 @@ export default function RouteScreen() {
               <ScrollView
                 style={styles.stepsScroll}
                 contentContainerStyle={styles.stepsContent}
-                showsVerticalScrollIndicator={true}
+                showsVerticalScrollIndicator={false}
               >
-                {steps.map((step, index) => (
-                  <View key={index} style={styles.stepRow}>
-                    <Text style={styles.stepNumber}>{index + 1}</Text>
-                    <Text style={styles.stepTitle}>{step}</Text>
-                  </View>
-                ))}
+                {steps.map((step, index) => {
+                  const Icon = maneuverIcon(step.maneuver);
+                  return (
+                    <View key={index} style={[styles.stepRow, index > 0 && styles.stepDivider]}>
+                      <View style={styles.stepIcon}>
+                        <Icon size={16} color={COLORS.text} />
+                      </View>
+                      <View style={styles.stepText}>
+                        <Text style={styles.stepTitle}>{step.title}</Text>
+                        {step.subtitle ? (
+                          <Text style={styles.stepSubtitle}>{step.subtitle}</Text>
+                        ) : null}
+                      </View>
+                      {step.distanceMeters ? (
+                        <Text style={styles.stepDistance}>
+                          {formatDistance(step.distanceMeters)}
+                        </Text>
+                      ) : null}
+                    </View>
+                  );
+                })}
               </ScrollView>
             ) : (
-              <Text style={styles.emptyText}>Route directions will appear here.</Text>
+              <Text style={styles.emptyText}>
+                {message || 'Route directions will appear here.'}
+              </Text>
             )}
           </View>
           <Pressable
             accessibilityRole="button"
             onPress={startNavigation}
-            disabled={loading || route.length < 2}
-            style={[styles.startButton, (loading || route.length < 2) && { opacity: 0.5 }]}
+            disabled={unavailable}
+            style={[styles.startButton, unavailable && { opacity: 0.5 }]}
           >
-            <Navigation size={17} color={COLORS.white} />
-            <Text style={styles.startText}>Start navigation in Google Maps</Text>
+            <Navigation size={20} color={COLORS.white} />
+            <Text style={styles.startText}>Start navigation</Text>
           </Pressable>
         </View>
       </View>
@@ -362,146 +430,174 @@ export default function RouteScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.white },
-  container: { flex: 1, backgroundColor: '#E8EEF0' },
-  webFallback: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#F0F4F8',
-  },
-  webFallbackTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text, marginBottom: 6 },
-  webFallbackSub: { fontSize: 12, color: COLORS.muted, textAlign: 'center' },
-  mapBack: {
+  container: { flex: 1, backgroundColor: '#E9E3D9' },
+  mapButton: {
     position: 'absolute',
-    top: 12,
-    left: 13,
-    width: 40,
-    height: 40,
-    borderRadius: 13,
+    top: 16,
+    left: 16,
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.control,
     backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    elevation: 3,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     zIndex: 10,
   },
-  mapLoading: {
+  mapLayers: { left: undefined, right: 16 },
+  mapArea: { flex: 1, minHeight: 160 },
+  trafficBanner: {
     position: 'absolute',
-    top: 65,
-    alignSelf: 'center',
-    backgroundColor: COLORS.white,
-    padding: 9,
-    borderRadius: 20,
-    elevation: 3,
-    zIndex: 5,
+    left: 16,
+    bottom: 48,
+    height: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    backgroundColor: COLORS.banner,
+    zIndex: 6,
   },
+  trafficText: { color: COLORS.white, fontFamily: FONTS.bold, fontSize: 13 },
   bottomSheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    maxHeight: '58%',
-    minHeight: 340,
+    marginTop: -28,
+    maxHeight: '64%',
+    minHeight: 380,
     backgroundColor: COLORS.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 16,
-    paddingTop: 9,
-    paddingBottom: 16,
+    borderTopLeftRadius: RADIUS.sheet,
+    borderTopRightRadius: RADIUS.sheet,
+    paddingHorizontal: 20,
+    paddingTop: 10,
     elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowColor: COLORS.text,
+    shadowOffset: { width: 0, height: -12 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
     zIndex: 10,
   },
   handle: {
-    width: 38,
+    width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#E4E9ED',
+    backgroundColor: COLORS.border,
     alignSelf: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   summaryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  eyebrow: { color: '#A0ADBB', fontSize: 9, fontWeight: '700', marginBottom: 3 },
-  duration: { color: COLORS.text, fontSize: 23, lineHeight: 28, fontWeight: '800' },
-  distance: { color: COLORS.muted, fontSize: 12, marginBottom: 5, fontWeight: '600' },
-  modeRow: { flexDirection: 'row', gap: 7, marginBottom: 12 },
+  summaryMain: { flex: 1, marginRight: 12 },
+  eyebrow: {
+    color: COLORS.faint,
+    fontFamily: FONTS.extraBold,
+    fontSize: 13,
+    lineHeight: 19.5,
+    letterSpacing: 1.04,
+  },
+  duration: {
+    color: COLORS.text,
+    fontFamily: FONTS.extraBold,
+    fontSize: 34,
+    lineHeight: 40,
+    letterSpacing: -0.85,
+  },
+  distance: {
+    color: COLORS.muted,
+    fontFamily: FONTS.semiBold,
+    fontSize: 14,
+    lineHeight: 21,
+    marginBottom: 6,
+  },
+  distanceDot: { color: COLORS.faint },
+  modeRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   modeButton: {
     flex: 1,
-    height: 36,
-    borderRadius: 12,
+    height: 43,
+    borderRadius: RADIUS.control,
     borderWidth: 1,
     borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 6,
   },
   modeButtonActive: { backgroundColor: COLORS.paleOrange, borderColor: COLORS.orange },
-  modeText: { color: COLORS.text, fontSize: 11, fontWeight: '600' },
-  modeTextActive: { color: COLORS.orange },
+  modeText: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 14 },
+  modeTextActive: { color: COLORS.orangeDark },
   placesCard: {
-    minHeight: 65,
     flexDirection: 'row',
-    backgroundColor: '#F4F6F8',
-    borderRadius: 12,
-    paddingHorizontal: 11,
-    paddingVertical: 10,
-    marginBottom: 12,
+    backgroundColor: COLORS.background,
+    borderRadius: RADIUS.control,
+    padding: 16,
+    marginBottom: 20,
   },
-  placeRail: { width: 15, alignItems: 'center', paddingTop: 4, paddingBottom: 3 },
-  startDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.orange },
-  placeLine: { flex: 1, width: 1, backgroundColor: '#C9D1D9', marginVertical: 2 },
-  endDot: { width: 7, height: 7, borderRadius: 2, backgroundColor: COLORS.text },
-  placeLabels: { flex: 1, justifyContent: 'space-between', gap: 8 },
-  placeText: { color: COLORS.text, fontSize: 11, fontWeight: '600' },
-  sectionLabel: { color: '#A0ADBB', fontSize: 9, fontWeight: '700', marginBottom: 7 },
+  placeRail: { width: 10, alignItems: 'center', paddingTop: 6, paddingBottom: 6 },
+  startDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.orange },
+  placeLine: {
+    flex: 1,
+    width: 2,
+    backgroundColor: 'rgba(169,180,190,0.6)',
+    marginVertical: 4,
+  },
+  endDot: { width: 10, height: 10, borderRadius: 2, backgroundColor: COLORS.text },
+  placeLabels: { flex: 1, minWidth: 0, marginLeft: 12, justifyContent: 'space-between', gap: 10 },
+  placeText: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 15, lineHeight: 22.5 },
+  sectionLabel: {
+    color: COLORS.faint,
+    fontFamily: FONTS.extraBold,
+    fontSize: 13,
+    lineHeight: 19.5,
+    letterSpacing: 1.04,
+    marginBottom: 8,
+  },
   stepsContainer: { flex: 1, minHeight: 60 },
   stepsScroll: { flex: 1 },
   stepsContent: { paddingBottom: 6 },
-  stepRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 9,
-    paddingVertical: 7,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  stepNumber: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#F2F4F6',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    color: COLORS.text,
-    fontSize: 10,
-    fontWeight: '700',
-    overflow: 'hidden',
+  stepRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12, minHeight: 66 },
+  stepDivider: { borderTopWidth: 1, borderTopColor: COLORS.border },
+  stepIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.background,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 2,
   },
-  stepTitle: { flex: 1, color: COLORS.text, fontSize: 11, lineHeight: 16 },
-  emptyText: { color: COLORS.muted, fontSize: 11, lineHeight: 16 },
+  stepText: { flex: 1, minWidth: 0, marginLeft: 12 },
+  stepTitle: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 15, lineHeight: 20.6 },
+  stepSubtitle: {
+    color: COLORS.muted,
+    fontFamily: FONTS.regular,
+    fontSize: 13,
+    lineHeight: 19.5,
+    marginTop: 2,
+  },
+  stepDistance: {
+    color: COLORS.muted,
+    fontFamily: FONTS.bold,
+    fontSize: 13,
+    lineHeight: 19.5,
+    marginLeft: 12,
+    marginTop: 2,
+  },
+  emptyText: { color: COLORS.muted, fontFamily: FONTS.regular, fontSize: 14, lineHeight: 20 },
   startButton: {
-    minHeight: 44,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: RADIUS.control,
     backgroundColor: COLORS.orange,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 10,
+    marginTop: 12,
   },
-  startText: { color: COLORS.white, fontSize: 12, fontWeight: '700' },
+  startText: { color: COLORS.white, fontFamily: FONTS.extraBold, fontSize: 17 },
 });
