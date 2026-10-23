@@ -94,9 +94,18 @@ The APK is signed with the default debug keystore, which is fine for sideloading
 
 **EAS (alternative):** `eas build --profile preview --platform android` (the `preview` profile is set to produce an APK).
 
+## Demo authentication
+
+Login, password reset and account creation are **demos**: there is no backend, no credential check, and no account or email is created. The UI says so on the login screen and in each modal, and success states read "Demo complete" rather than claiming a real account exists. Connect a real auth service before presenting these flows as functional.
+
 ## Quality checks
 
-The unit suite uses Node.js's built-in test runner, so no separate test framework is required. It covers coordinate validation, encoded route polyline decoding, safe web-map label serialization, and stale autocomplete request guards.
+`npm test` runs two suites:
+
+- **Unit** (`npm run test:unit`, Node's built-in runner): coordinate validation, polyline decoding, auth validation, Places response parsing and request guards, and safe web-map label serialization.
+- **Component / route-flow** (`npm run test:components`, Jest + React Native Testing Library): login and demo-auth modals, route screen with missing/invalid/zero coordinates and API failures, location autocomplete races (out-of-order, cleared field, HTTP error, rejected fetch), and web map popup escaping.
+
+Native-only behaviour (Expo Location permission prompts, the native map view, Google Maps hand-off, device keyboard handling) is not covered by these tests and needs a manual smoke test on a device or emulator before release.
 
 ```bash
 npm test

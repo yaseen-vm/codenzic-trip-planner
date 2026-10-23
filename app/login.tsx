@@ -12,7 +12,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CreateAccountModal, ForgotPasswordModal, isValidEmail } from '../components/AuthModals';
+import { CreateAccountModal, ForgotPasswordModal } from '../components/AuthModals';
+import { hasErrors, validateLogin } from '../utils/auth.mjs';
 import PrimaryButton from '../components/PrimaryButton';
 import TextField from '../components/TextField';
 import { COLORS, FONTS } from '../constants/theme';
@@ -26,13 +27,13 @@ export default function LoginScreen() {
   const [forgotOpen, setForgotOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
 
-  const emailIsValid = isValidEmail(email);
-  const emailError = submitted && !emailIsValid;
-  const passwordError = submitted && password.length < 6;
+  const errors = validateLogin({ email, password });
+  const emailError = submitted && Boolean(errors.email);
+  const passwordError = submitted && Boolean(errors.password);
 
   function handleLogin() {
     setSubmitted(true);
-    if (!emailIsValid || password.length < 6) return;
+    if (hasErrors(errors)) return;
     router.push('/locations');
   }
 
@@ -81,6 +82,13 @@ export default function LoginScreen() {
             <Text style={styles.subtitle}>
               Log in to plan a trip and follow your route turn by turn.
             </Text>
+
+            <View style={styles.demoBanner} accessibilityRole="alert">
+              <Text style={styles.demoText}>
+                Demo mode: no account is checked or created. Any valid-looking email and password
+                continues into the app.
+              </Text>
+            </View>
 
             <View style={styles.form}>
               <TextField
@@ -179,6 +187,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 28,
   },
+  demoBanner: {
+    backgroundColor: '#FFF5E9',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+  },
+  demoText: { color: '#8B4B17', fontFamily: FONTS.regular, fontSize: 13, lineHeight: 18 },
   form: { gap: 16 },
   forgotButton: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 1 },
   forgotText: { color: COLORS.orange, fontFamily: FONTS.bold, fontSize: 14, lineHeight: 21 },

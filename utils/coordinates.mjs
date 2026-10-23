@@ -1,9 +1,12 @@
+// Plain decimals only: Number() would also accept hex ("0x10") and exponent ("1e1") forms.
+const DECIMAL = /^[+-]?(\d+\.?\d*|\.\d+)$/;
+
 export function parseCoordinate(latitude, longitude) {
   if (
     typeof latitude !== 'string' ||
     typeof longitude !== 'string' ||
-    latitude.trim() === '' ||
-    longitude.trim() === ''
+    !DECIMAL.test(latitude.trim()) ||
+    !DECIMAL.test(longitude.trim())
   ) {
     return null;
   }
