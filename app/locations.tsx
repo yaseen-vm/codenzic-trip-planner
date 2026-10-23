@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
+import * as Location from 'expo-location';
 import {
   ActivityIndicator,
   Alert,
@@ -26,11 +27,14 @@ import {
   TrainFront,
   X,
 } from 'lucide-react-native';
+import MapPicker from '../components/MapPicker';
 import { COLORS, FONTS, RADIUS } from '../constants/theme';
 import { SAVED_PLACES, SavedPlace } from '../constants/savedPlaces';
 
 const PLACES_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY;
 const newSessionToken = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+// Used to centre the map picker when nothing has been chosen yet.
+const DEFAULT_CENTER = { latitude: 25.2866, longitude: 51.5265 };
 type Place = { description: string; placeId: string };
 type SelectedPlace = { label: string; latitude: number; longitude: number };
 type ListRow = {
@@ -59,6 +63,9 @@ export default function SetLocationsScreen() {
   const [activeField, setActiveField] = useState<'pickup' | 'dropoff'>('pickup');
   const [suggestions, setSuggestions] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
+  const [notice, setNotice] = useState('');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionToken = useRef(newSessionToken());
 
@@ -114,6 +121,59 @@ export default function SetLocationsScreen() {
     }
     setSuggestions([]);
     sessionToken.current = newSessionToken();
+  };
+
+  // Turns coordinates into a readable address, falling back to the raw coordinates.
+  const labelForCoordinate = async (latitude: number, longitude: number) => {
+    try {
+      const [address] = await Location.reverseGeocodeAsync({ latitude, longitude });
+      const parts = [address?.name, address?.street, address?.city].filter(
+        (part, index, all): part is string => Boolean(part) && all.indexOf(part) === index,
+      );
+      if (parts.length) return parts.join(', ');
+    } catch {
+      // Geocoding is best effort; fall through to coordinates.
+    }
+    return latitude.toFixed(5) + ', ' + longitude.toFixed(5);
+  };
+
+  const useCurrentLocation = async () => {
+    Keyboard.dismiss();
+    setNotice('');
+    setLocating(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setNotice('Location permission was denied. Allow it in Settings or search for an address.');
+        return;
+      }
+      const { coords } = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      applyChosen({
+        label: await labelForCoordinate(coords.latitude, coords.longitude),
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
+    } catch {
+      setNotice('Could not get your location. Check that location services are on.');
+    } finally {
+      setLocating(false);
+    }
+  };
+
+  const confirmMapPick = async (coordinate: { latitude: number; longitude: number }) => {
+    setMapOpen(false);
+    setNotice('');
+    setLoading(true);
+    try {
+      applyChosen({
+        label: await labelForCoordinate(coordinate.latitude, coordinate.longitude),
+        ...coordinate,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const selectSavedPlace = (place: SavedPlace) => {
@@ -335,28 +395,32 @@ export default function SetLocationsScreen() {
             </View>
           ) : null}
 
+          {notice ? (
+            <View style={styles.notice}>
+              <Text style={styles.noticeText}>{notice}</Text>
+            </View>
+          ) : null}
+
           <View style={styles.actionRow}>
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
-                Alert.alert(
-                  'Current location',
-                  'GPS pickup requires location permission and device location services; choose an address from search for now.',
-                )
-              }
+              disabled={locating}
+              onPress={useCurrentLocation}
               style={styles.actionButton}
             >
-              <LocateFixed size={18} color={COLORS.text} />
-              <Text style={styles.actionText}>Use current</Text>
+              {locating ? (
+                <ActivityIndicator size="small" color={COLORS.orange} />
+              ) : (
+                <LocateFixed size={18} color={COLORS.text} />
+              )}
+              <Text style={styles.actionText}>{locating ? 'Locating…' : 'Use current'}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
-                Alert.alert(
-                  'Pick on map',
-                  'Map selection is not available yet. Search for an address instead.',
-                )
-              }
+              onPress={() => {
+                Keyboard.dismiss();
+                setMapOpen(true);
+              }}
               style={styles.actionButton}
             >
               <MapIcon size={18} color={COLORS.text} />
@@ -412,6 +476,16 @@ export default function SetLocationsScreen() {
           </Pressable>
         </View>
       </View>
+
+      <MapPicker
+        visible={mapOpen}
+        title={activeField === 'pickup' ? 'Set pickup on map' : 'Set drop-off on map'}
+        initialCenter={
+          activePlace ?? (activeField === 'dropoff' ? pickupPlace : null) ?? DEFAULT_CENTER
+        }
+        onCancel={() => setMapOpen(false)}
+        onConfirm={confirmMapPick}
+      />
     </SafeAreaView>
   );
 }

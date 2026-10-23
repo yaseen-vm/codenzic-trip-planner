@@ -1,5 +1,7 @@
 # TripPath — Navigation Flow
 
+> **Status note:** this document is the original pre-development plan. The shipped app differs (light theme with orange accent, flat Expo Router files in `app/`, local component state, no auth context, Google Places/Routes instead of mock data). The current state is in [README.md](../README.md) (`./README.md` for this file if at repo root) and [PROJECT-SETUP.md](PROJECT-SETUP.md).
+
 > **Document:** 09 — Navigation Architecture & Screen Transitions  
 > **Status:** Finalized (Pre-development)
 

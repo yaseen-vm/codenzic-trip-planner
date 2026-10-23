@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import RouteMap, { MapRegion } from '../components/RouteMap';
+import TripPlaces from '../components/TripPlaces';
 import {
   ArrowUp,
   ChevronLeft,
@@ -360,21 +361,7 @@ export default function RouteScreen() {
               );
             })}
           </View>
-          <View style={styles.placesCard}>
-            <View style={styles.placeRail}>
-              <View style={styles.startDot} />
-              <View style={styles.placeLine} />
-              <View style={styles.endDot} />
-            </View>
-            <View style={styles.placeLabels}>
-              <Text numberOfLines={1} style={styles.placeText}>
-                {pickup}
-              </Text>
-              <Text numberOfLines={1} style={styles.placeText}>
-                {dropoff}
-              </Text>
-            </View>
-          </View>
+          <TripPlaces pickup={pickup} dropoff={dropoff} tinted />
           <Text style={styles.sectionLabel}>Turn by turn</Text>
           <View style={styles.stepsContainer}>
             {loading ? (
@@ -531,24 +518,6 @@ const styles = StyleSheet.create({
   modeButtonActive: { backgroundColor: COLORS.paleOrange, borderColor: COLORS.orange },
   modeText: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 14 },
   modeTextActive: { color: COLORS.orangeDark },
-  placesCard: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.background,
-    borderRadius: RADIUS.control,
-    padding: 16,
-    marginBottom: 20,
-  },
-  placeRail: { width: 10, alignItems: 'center', paddingTop: 6, paddingBottom: 6 },
-  startDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.orange },
-  placeLine: {
-    flex: 1,
-    width: 2,
-    backgroundColor: 'rgba(169,180,190,0.6)',
-    marginVertical: 4,
-  },
-  endDot: { width: 10, height: 10, borderRadius: 2, backgroundColor: COLORS.text },
-  placeLabels: { flex: 1, minWidth: 0, marginLeft: 12, justifyContent: 'space-between', gap: 10 },
-  placeText: { color: COLORS.text, fontFamily: FONTS.bold, fontSize: 15, lineHeight: 22.5 },
   sectionLabel: {
     color: COLORS.faint,
     fontFamily: FONTS.extraBold,

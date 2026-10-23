@@ -18,7 +18,9 @@ This guide records the local workflow for TripPath. Product and screen-level spe
 
 ## Current implementation status
 
-The Expo Router scaffold, login, Places search, and route screen are present. Login validates email syntax and a minimum password length, but authentication, password recovery, and account creation remain placeholders.
+Implemented: login with validation and in-app Forgot password / Create account modals, Set Locations (mock saved places, Google Places autocomplete, Use current, Pick on map), and Route View (map, Routes API polyline, ETA, turn list, hand-off to Google Maps).
+
+Not implemented: real authentication (the modals are demo-only) and the APK build. See "Assignment coverage" in [README.md](../README.md). Use current needs a rebuilt dev client because `expo-location` was added to the app config.
 
 ## Quality checks
 
