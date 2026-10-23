@@ -116,31 +116,31 @@ Start with [AGENT.md](AGENT.md), then the guides in [`docs/`](docs): [overview](
 
 ## Assignment coverage
 
-Status against the Codenzic brief: ✅ done · ⚠️ partial · ❌ not done.
+Status against the Codenzic brief: Done, Partial or Not done.
 
 | Requirement                                                                   | Status | Notes                                                                                                                                                   | Where                                                          |
 | ----------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **1. Login** – email/password, validation, login, create account              | ✅     | Validated fields, show/hide password, "Forgot password?" and "Create an account" modals. Authentication is a demo: no backend                           | `src/features/auth/`                                           |
-| **2. Set Locations** – start/destination, current vs manual, suggestions list | ✅     | Swap/clear, saved places, Google Places autocomplete, Use current, Pick on map. "Next" explains what is missing or wrong (incomplete, identical places) | `src/features/locations/`, `src/components/map/MapPicker.tsx`  |
-| **3. Trip Ready** – selected trip info, proceed action                        | ✅     | In the Figma design this is the Set Locations screen with the drop-off active, so there is no separate screen; "Next" proceeds to the route             | `src/features/locations/`, `src/features/route/`               |
-| **4. Route View** – map, ETA, route info, start navigation                    | ✅     | Markers, polyline, duration, distance, arrival, modes, traffic, steps, satellite toggle, hand-off to Google Maps. Web uses a Leaflet map                | `src/features/route/`, `src/components/map/RouteMap(.web).tsx` |
+| **1. Login** – email/password, validation, login, create account              | Done   | Validated fields, show/hide password, "Forgot password?" and "Create an account" modals. Authentication is a demo: no backend                           | `src/features/auth/`                                           |
+| **2. Set Locations** – start/destination, current vs manual, suggestions list | Done   | Swap/clear, saved places, Google Places autocomplete, Use current, Pick on map. "Next" explains what is missing or wrong (incomplete, identical places) | `src/features/locations/`, `src/components/map/MapPicker.tsx`  |
+| **3. Trip Ready** – selected trip info, proceed action                        | Done   | In the Figma design this is the Set Locations screen with the drop-off active, so there is no separate screen; "Next" proceeds to the route             | `src/features/locations/`, `src/features/route/`               |
+| **4. Route View** – map, ETA, route info, start navigation                    | Done   | Markers, polyline, duration, distance, arrival, modes, traffic, steps, satellite toggle, hand-off to Google Maps. Web uses a Leaflet map                | `src/features/route/`, `src/components/map/RouteMap(.web).tsx` |
 
 | Technical expectation                  | Status | Notes                                                                                                        |
 | -------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
-| React Native + Expo                    | ✅     | Expo SDK 58, React Native 0.88, TypeScript                                                                   |
-| Proper navigation                      | ✅     | Expo Router stack: `/` → `/login` → `/locations` → `/route`; route params carry the places                   |
-| Responsive UI matching Figma           | ✅     | Shared tokens in `src/constants/theme.ts`, Nunito Sans, safe-area handling; matched by hand                  |
-| Component-based, reusable architecture | ✅     | Feature folders, shared components, hooks, services, pure utils. See [Architecture](docs/02-ARCHITECTURE.md) |
-| Application state                      | ✅     | Local state per screen (a pure reducer for the location form) and router params; no global store needed      |
-| Basic form validation                  | ✅     | Login, sign-up and location validation                                                                       |
-| Mock/static data                       | ✅     | Saved places are static; routes and places use Google APIs when keys are configured                          |
-| Clean code                             | ✅     | Strict TypeScript, ESLint, Prettier, no hardcoded literals in components, tests with enforced coverage, CI   |
+| React Native + Expo                    | Done   | Expo SDK 58, React Native 0.88, TypeScript                                                                   |
+| Proper navigation                      | Done   | Expo Router stack: `/` → `/login` → `/locations` → `/route`; route params carry the places                   |
+| Responsive UI matching Figma           | Done   | Shared tokens in `src/constants/theme.ts`, Nunito Sans, safe-area handling; matched by hand                  |
+| Component-based, reusable architecture | Done   | Feature folders, shared components, hooks, services, pure utils. See [Architecture](docs/02-ARCHITECTURE.md) |
+| Application state                      | Done   | Local state per screen (a pure reducer for the location form) and router params; no global store needed      |
+| Basic form validation                  | Done   | Login, sign-up and location validation                                                                       |
+| Mock/static data                       | Done   | Saved places are static; routes and places use Google APIs when keys are configured                          |
+| Clean code                             | Done   | Strict TypeScript, ESLint, Prettier, no hardcoded literals in components, tests with enforced coverage, CI   |
 
-| Deliverable                    | Status                                                                                         |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| GitHub repository              | ✅                                                                                             |
-| README with setup instructions | ✅ (this file)                                                                                 |
-| APK                            | ✅ built by CI (`build-apk.yml`); download from the Actions artifact or the Latest APK release |
+| Deliverable                    | Status                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| GitHub repository              | Done                                                                                              |
+| README with setup instructions | Done (this file)                                                                                  |
+| APK                            | Done; built by CI (`build-apk.yml`); download from the Actions artifact or the Latest APK release |
 
 ## Known limitations
 
